@@ -2,12 +2,13 @@
 import React from "react";
 import { useText } from "../context/TextContext";
 import CursorLockedInput from "@/app/components/CursorLockInput/index";
+import { useRouter } from "next/navigation";
 
 export default function TypingPage() {
   const { text } = useText();
   const [value, setValue] = React.useState<string>("");
   const inputRef = React.useRef<HTMLInputElement>(null);
-
+  const router = useRouter();
   const compare = (answer: string, current: string) => {
     const minLength = Math.min(answer.length, current.length);
     const temp = [];
@@ -15,6 +16,11 @@ export default function TypingPage() {
       if (current[i] == " " || answer[i] === current[i]) {
         temp.push(answer[i]);
       } else break;
+    }
+    if (temp.length === answer.length) {
+      // If the user has typed the entire text, redirect to the next page
+      router.push("/typing/finished");
+      return { identical: "", incorrect: "", remaining: "" };
     }
     const identical = temp.join("");
     const incorrect = current.slice(identical.length);
@@ -34,6 +40,7 @@ export default function TypingPage() {
       className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4"
       onClick={() => inputRef.current?.focus()}
     >
+      {/* input is invisible but always on focus */}
       <CursorLockedInput
         ref={inputRef}
         className="fixed top-0 left-0 w-full h-full opacity-10 pointer-events-none"
@@ -43,6 +50,7 @@ export default function TypingPage() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
+      {/* Display all text */}
       <div
         className="max-w-2xl p-4 bg-gray-800 rounded-lg shadow-lg text-2xl text-white break-all"
         style={{ lineHeight: "5rem" }}
@@ -50,6 +58,7 @@ export default function TypingPage() {
         <span className="text-white mb-4">{identical}</span>
         <span className="text-green-500">{incorrect}</span>
         <RemaingSpan remaining={remaining} />
+        {/* <span className="text-gray-500">{remaining}</span> */}
       </div>
     </div>
   );

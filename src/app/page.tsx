@@ -81,6 +81,7 @@ export default function Home() {
       return newIdx;
     });
   };
+
   const handleClearCurrent = () => {
     if (historyIndex === -1 || history.length === 0) return;
     const newHistory = history.filter((_, idx) => idx !== historyIndex);

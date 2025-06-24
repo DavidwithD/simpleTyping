@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-import defaultText from "./defaultText.json";
-
 type TextContextType = {
   text: string;
   setText: (value: string) => void;
@@ -12,7 +10,7 @@ type TextContextType = {
 const TextContext = createContext<TextContextType | undefined>(undefined);
 
 export function TextProvider({ children }: { children: ReactNode }) {
-  const [text, setText] = useState<string>(defaultText.text || "");
+  const [text, setText] = useState<string>("");
   return (
     <TextContext.Provider value={{ text, setText }}>
       {children}

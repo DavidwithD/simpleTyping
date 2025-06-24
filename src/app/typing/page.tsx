@@ -54,7 +54,11 @@ export default function TypingPage() {
       >
         <span className="text-white mb-4">{identical}</span>
         <span className="text-green-500">{incorrect}</span>
-        <RemainingSpan remaining={remaining} showRemaining={showRemaining} />
+        <RemainingSpan
+          remaining={remaining}
+          showRemaining={showRemaining}
+          highlightFirstSpace
+        />
       </div>
     </div>
   );

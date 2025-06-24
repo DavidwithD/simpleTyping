@@ -1,7 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useText } from "./context/TextContext";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { useTypingHistory } from "./hooks/useTypingHistory";
+import { MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
 
 function trimAndReplaceNewLineAndTab(text: string): string {
   return text
@@ -14,29 +16,18 @@ function trimAndReplaceNewLineAndTab(text: string): string {
 export default function Home() {
   const router = useRouter();
   const { text, setText } = useText();
-  const [value, setValue] = useState<string>("");
   const [message, setMessage] = useState<string>("");
-  const [history, setHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState<number>(-1);
-
-  // Load history and last value from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("typingHistory");
-    let arr: string[] = [];
-    if (stored) {
-      try {
-        arr = JSON.parse(stored);
-      } catch {}
-    }
-    setHistory(arr);
-    if (arr.length > 0) {
-      setValue(arr[arr.length - 1]);
-      setHistoryIndex(arr.length - 1);
-    } else {
-      setValue(text);
-      setHistoryIndex(-1);
-    }
-  }, []);
+  const {
+    value,
+    setValue,
+    historyIndex,
+    hasPrev,
+    hasNext,
+    handleHistoryLeft,
+    handleHistoryRight,
+    handleClearCurrent,
+    addToHistory,
+  } = useTypingHistory(text);
 
   const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setValue(event.target.value);
@@ -54,50 +45,8 @@ export default function Home() {
     }
     setMessage("");
     setText(cleanedValue);
-    // Store to localStorage history
-    const arr = [...history];
-    if (arr.length === 0 || arr[arr.length - 1] !== cleanedValue) {
-      arr.push(cleanedValue);
-      localStorage.setItem("typingHistory", JSON.stringify(arr));
-      setHistory(arr);
-      setHistoryIndex(arr.length - 1);
-    }
+    addToHistory(cleanedValue);
     router.push("/typing");
-  };
-
-  const handleHistoryLeft = () => {
-    if (history.length === 0) return;
-    setHistoryIndex((idx) => {
-      const newIdx = Math.max(0, idx - 1);
-      setValue(history[newIdx]);
-      return newIdx;
-    });
-  };
-  const handleHistoryRight = () => {
-    if (history.length === 0) return;
-    setHistoryIndex((idx) => {
-      const newIdx = Math.min(history.length - 1, idx + 1);
-      setValue(history[newIdx]);
-      return newIdx;
-    });
-  };
-
-  const handleClearCurrent = () => {
-    if (historyIndex === -1 || history.length === 0) return;
-    const newHistory = history.filter((_, idx) => idx !== historyIndex);
-    localStorage.setItem("typingHistory", JSON.stringify(newHistory));
-    setHistory(newHistory);
-    // Adjust index and value
-    if (newHistory.length === 0) {
-      setValue("");
-      setHistoryIndex(-1);
-    } else if (historyIndex >= newHistory.length) {
-      setValue(newHistory[newHistory.length - 1]);
-      setHistoryIndex(newHistory.length - 1);
-    } else {
-      setValue(newHistory[historyIndex]);
-      setHistoryIndex(historyIndex);
-    }
   };
 
   return (
@@ -135,63 +84,24 @@ export default function Home() {
           disabled={historyIndex === -1}
           aria-label="Clear"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          <MdClose size={20} />
         </button>
         {/* Subtle Chevron navigation middle left/right, on top of textarea */}
         <button
           className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-1 bg-transparent text-gray-400 rounded-full opacity-30 group-hover:opacity-80 group-hover:bg-gray-600 group-hover:text-white transition-all duration-200 hover:bg-gray-700 hover:text-white focus:outline-none"
           onClick={handleHistoryLeft}
-          disabled={historyIndex <= 0}
+          disabled={!hasPrev}
           aria-label="Previous"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+          <MdChevronLeft size={24} />
         </button>
         <button
           className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-1 bg-transparent text-gray-400 rounded-full opacity-30 group-hover:opacity-80 group-hover:bg-gray-600 group-hover:text-white transition-all duration-200 hover:bg-gray-700 hover:text-white focus:outline-none"
           onClick={handleHistoryRight}
-          disabled={historyIndex === -1 || historyIndex >= history.length - 1}
+          disabled={!hasNext}
           aria-label="Next"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+          <MdChevronRight size={24} />
         </button>
         <textarea
           className="w-full h-64 p-4 text-lg bg-slate-700 text-white border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

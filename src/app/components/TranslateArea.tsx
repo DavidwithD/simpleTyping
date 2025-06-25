@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { languageOptions } from "../constants/languageOptions";
 
-export default function TranslateArea() {
-  const [translateValue, setTranslateValue] = useState("");
+export default function TranslateArea({
+  value,
+  setValue
+}: {
+  value: string;
+  setValue: (v: string) => void;
+}) {
   const [targetLang, setTargetLang] = useState("auto");
 
   const handleTranslate = async () => {
-    if (!translateValue) return;
+    if (!value) return;
     try {
-      await navigator.clipboard.writeText(translateValue);
+      await navigator.clipboard.writeText(value);
     } catch {}
-    const url = `https://translate.google.com/?sl=auto&tl=${targetLang}&text=${encodeURIComponent(translateValue)}&op=translate`;
+    const url = `https://translate.google.com/?sl=auto&tl=${targetLang}&text=${encodeURIComponent(value)}&op=translate`;
     window.open(url, "_blank");
   };
 
@@ -19,8 +24,8 @@ export default function TranslateArea() {
       <textarea
         className="w-full h-24 p-4 text-lg bg-slate-700 text-white border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
         placeholder="Enter text to translate..."
-        value={translateValue}
-        onChange={(e) => setTranslateValue(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
       <div className="flex items-center gap-2">
         <button

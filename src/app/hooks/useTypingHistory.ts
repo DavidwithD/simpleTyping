@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 
-export function useTypingHistory(initialValue: string) {
-  const [history, setHistory] = useState<string[]>([]);
+export type TypingHistoryItem = {
+  originalText: string;
+  typingText: string;
+};
+
+export function useTypingHistory() {
+  const [history, setHistory] = useState<TypingHistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
-  const [value, setValue] = useState<string>(initialValue);
+  const [originalText, setOriginalText] = useState<string>("");
+  const [typingText, setTypingText] = useState<string>("");
 
   // Load history and last value from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("typingHistory");
-    let arr: string[] = [];
+    let arr: TypingHistoryItem[] = [];
     if (stored) {
       try {
         arr = JSON.parse(stored);
@@ -16,14 +22,15 @@ export function useTypingHistory(initialValue: string) {
     }
     setHistory(arr);
     if (arr.length > 0) {
-      setValue(arr[arr.length - 1]);
+      setOriginalText(arr[arr.length - 1].originalText);
+      setTypingText(arr[arr.length - 1].typingText);
       setHistoryIndex(arr.length - 1);
     } else {
-      setValue(initialValue);
+      setOriginalText("");
+      setTypingText("");
       setHistoryIndex(-1);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValue]);
+  }, []);
 
   const hasPrev = historyIndex > 0;
   const hasNext = historyIndex !== -1 && historyIndex < history.length - 1;
@@ -32,7 +39,8 @@ export function useTypingHistory(initialValue: string) {
     if (history.length === 0) return;
     setHistoryIndex((idx) => {
       const newIdx = Math.max(0, idx - 1);
-      setValue(history[newIdx]);
+      setOriginalText(history[newIdx].originalText);
+      setTypingText(history[newIdx].typingText);
       return newIdx;
     });
   };
@@ -41,7 +49,8 @@ export function useTypingHistory(initialValue: string) {
     if (history.length === 0) return;
     setHistoryIndex((idx) => {
       const newIdx = Math.min(history.length - 1, idx + 1);
-      setValue(history[newIdx]);
+      setOriginalText(history[newIdx].originalText);
+      setTypingText(history[newIdx].typingText);
       return newIdx;
     });
   };
@@ -51,23 +60,29 @@ export function useTypingHistory(initialValue: string) {
     const newHistory = history.filter((_, idx) => idx !== historyIndex);
     localStorage.setItem("typingHistory", JSON.stringify(newHistory));
     setHistory(newHistory);
-    // Adjust index and value
     if (newHistory.length === 0) {
-      setValue("");
+      setOriginalText("");
+      setTypingText("");
       setHistoryIndex(-1);
     } else if (historyIndex >= newHistory.length) {
-      setValue(newHistory[newHistory.length - 1]);
+      setOriginalText(newHistory[newHistory.length - 1].originalText);
+      setTypingText(newHistory[newHistory.length - 1].typingText);
       setHistoryIndex(newHistory.length - 1);
     } else {
-      setValue(newHistory[historyIndex]);
+      setOriginalText(newHistory[historyIndex].originalText);
+      setTypingText(newHistory[historyIndex].typingText);
       setHistoryIndex(historyIndex);
     }
   };
 
-  const addToHistory = (newValue: string) => {
+  const addToHistory = (original: string, typing: string) => {
     const arr = [...history];
-    if (arr.length === 0 || arr[arr.length - 1] !== newValue) {
-      arr.push(newValue);
+    if (
+      arr.length === 0 ||
+      arr[arr.length - 1].originalText !== original ||
+      arr[arr.length - 1].typingText !== typing
+    ) {
+      arr.push({ originalText: original, typingText: typing });
       localStorage.setItem("typingHistory", JSON.stringify(arr));
       setHistory(arr);
       setHistoryIndex(arr.length - 1);
@@ -75,8 +90,10 @@ export function useTypingHistory(initialValue: string) {
   };
 
   return {
-    value,
-    setValue,
+    originalText,
+    setOriginalText,
+    typingText,
+    setTypingText,
     history,
     historyIndex,
     hasPrev,

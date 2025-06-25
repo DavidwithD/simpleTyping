@@ -1,27 +1,24 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useText } from "./context/TextContext";
-import { ChangeEvent, useState } from "react";
+import { useState, useEffect } from "react";
 import { useTypingHistory } from "./hooks/useTypingHistory";
-import TypingInputArea from "./components/TypingInputArea";
-import { languageOptions } from "./constants/languageOptions";
 import TranslateArea from "./components/TranslateArea";
-
-function trimAndReplaceNewLineAndTab(text: string): string {
-  return text
-    .trim()
-    .replace(/\n/g, " ")
-    .replace(/\t/g, " ")
-    .replace(/\s+/g, " ");
-}
+import TypingInputArea from "./components/TypingInputArea";
+import HistoryControls from "./components/HistoryControls";
+import { trimAndReplaceNewLineAndTab } from "./utils/textUtils";
 
 export default function Home() {
   const router = useRouter();
-  const { text, setText } = useText();
   const [message, setMessage] = useState<string>("");
+  const { originalText, setOriginalText, typingText, setTypingText } =
+    useText();
+  const [translateValue, setTranslateValue] = useState<string>(
+    originalText || "",
+  );
+  const [typingValue, setTypingValue] = useState<string>(typingText || "");
   const {
-    value,
-    setValue,
+    history,
     historyIndex,
     hasPrev,
     hasNext,
@@ -29,51 +26,45 @@ export default function Home() {
     handleHistoryRight,
     handleClearCurrent,
     addToHistory,
-  } = useTypingHistory(text);
+  } = useTypingHistory();
 
-  const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.target.value);
-  };
+  // When historyIndex changes, update the textareas with the corresponding history values
+  useEffect(() => {
+    if (historyIndex !== -1 && history[historyIndex]) {
+      setTranslateValue(history[historyIndex].originalText);
+      setTypingValue(history[historyIndex].typingText);
+    }
+  }, [historyIndex, history]);
 
   const handleStartTyping = () => {
-    const cleanedValue = trimAndReplaceNewLineAndTab(value);
-    if (cleanedValue.length === 0) {
-      setMessage("Please enter some text to start typing.");
-      return;
-    }
-    if (cleanedValue.length > 1000) {
-      setMessage("Text is too long. Please limit it to 1000 characters.");
+    const cleanedOriginal = trimAndReplaceNewLineAndTab(translateValue);
+    const cleanedTyping = trimAndReplaceNewLineAndTab(typingValue);
+    if (!cleanedOriginal || !cleanedTyping) {
+      setMessage("Please enter both the original and translated text.");
       return;
     }
     setMessage("");
-    setText(cleanedValue);
-    addToHistory(cleanedValue);
+    setOriginalText(cleanedOriginal);
+    setTypingText(cleanedTyping);
+    addToHistory(cleanedOriginal, cleanedTyping);
     router.push("/typing");
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4">
       <h1 className="text-4xl font-bold text-white mb-6">Simple Typing App</h1>
-      <p className="text-lg text-white mb-4">
-        This is a simple typing app built with Next.js and Tailwind CSS.
-      </p>
-      <p className="text-lg text-white mb-4">
-        To get started, type in the text area below and click
-        <i> Start Typing.</i>
-      </p>
-      <h1 className="text-2xl font-bold text-white mb-6">Put your text here</h1>
-      <TranslateArea />
-      <TypingInputArea
-        value={value}
-        setValue={setValue}
-        hasPrev={hasPrev}
-        hasNext={hasNext}
+
+      <TranslateArea value={translateValue} setValue={setTranslateValue} />
+      <TypingInputArea value={typingValue} setValue={setTypingValue} />
+      {message && <p className="text-red-500 mt-4">{message}</p>}
+      <HistoryControls
         onPrev={handleHistoryLeft}
         onNext={handleHistoryRight}
         onClear={handleClearCurrent}
-        showClear={historyIndex !== -1}
+        hasPrev={hasPrev}
+        hasNext={hasNext}
+        canClear={historyIndex !== -1}
       />
-      {message && <p className="text-red-500 mt-4">{message}</p>}
       <button
         className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         onClick={handleStartTyping}

@@ -7,25 +7,25 @@ import RemainingSpan from "../components/RemainSpan";
 import SettingsToggle from "../components/SettingToggle";
 
 export default function TypingPage() {
-  const { text } = useText();
+  const { typingText } = useText();
   const [value, setValue] = React.useState<string>("");
   const [showRemaining, setShowRemaining] = React.useState(true);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const { identical, incorrect, remaining } = compareStr(text, value);
+  const { identical, incorrect, remaining } = compareStr(typingText, value);
 
   React.useEffect(() => {
-    if (identical.length === text.length) {
+    if (identical.length === typingText.length) {
       router.push("/typing/finished");
     }
-  }, [identical.length, text.length, router]);
+  }, [identical.length, typingText.length, router]);
 
-  if (identical.length === text.length) {
+  if (identical.length === typingText.length) {
     return null;
   }
 
-  if (text.length === 0) {
+  if (typingText.length === 0) {
     router.push("/");
     return null;
   }

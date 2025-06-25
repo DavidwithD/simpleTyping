@@ -3,16 +3,21 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type TextContextType = {
-  text: string;
-  setText: (value: string) => void;
+  originalText: string;
+  setOriginalText: (value: string) => void;
+  typingText: string;
+  setTypingText: (value: string) => void;
 };
 
 const TextContext = createContext<TextContextType | undefined>(undefined);
 
 export function TextProvider({ children }: { children: ReactNode }) {
-  const [text, setText] = useState<string>("");
+  const [originalText, setOriginalText] = useState<string>("");
+  const [typingText, setTypingText] = useState<string>("");
   return (
-    <TextContext.Provider value={{ text, setText }}>
+    <TextContext.Provider
+      value={{ originalText, setOriginalText, typingText, setTypingText }}
+    >
       {children}
     </TextContext.Provider>
   );

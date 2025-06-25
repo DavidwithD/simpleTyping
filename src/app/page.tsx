@@ -3,7 +3,9 @@ import { useRouter } from "next/navigation";
 import { useText } from "./context/TextContext";
 import { ChangeEvent, useState } from "react";
 import { useTypingHistory } from "./hooks/useTypingHistory";
-import { MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
+import TypingInputArea from "./components/TypingInputArea";
+import { languageOptions } from "./constants/languageOptions";
+import TranslateArea from "./components/TranslateArea";
 
 function trimAndReplaceNewLineAndTab(text: string): string {
   return text
@@ -60,57 +62,17 @@ export default function Home() {
         <i> Start Typing.</i>
       </p>
       <h1 className="text-2xl font-bold text-white mb-6">Put your text here</h1>
-      {/* Paste from clipboard button */}
-      <div className="w-full max-w-2xl flex justify-end mb-2">
-        <button
-          className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          onClick={async () => {
-            try {
-              const text = await navigator.clipboard.readText();
-              setValue(text);
-            } catch {
-              setMessage("Failed to read from clipboard.");
-            }
-          }}
-        >
-          Paste from Clipboard
-        </button>
-      </div>
-      <div className="w-full max-w-2xl mb-2 relative group">
-        {/* Subtle Floating X (Clear) Button */}
-        <button
-          className="absolute top-2 right-2 z-10 p-1 bg-transparent text-gray-400 rounded-full opacity-40 group-hover:opacity-90 group-hover:bg-red-600 group-hover:text-white transition-all duration-200 hover:bg-red-700 hover:text-white focus:outline-none"
-          onClick={handleClearCurrent}
-          disabled={historyIndex === -1}
-          aria-label="Clear"
-        >
-          <MdClose size={20} />
-        </button>
-        {/* Subtle Chevron navigation middle left/right, on top of textarea */}
-        <button
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-1 bg-transparent text-gray-400 rounded-full opacity-30 group-hover:opacity-80 group-hover:bg-gray-600 group-hover:text-white transition-all duration-200 hover:bg-gray-700 hover:text-white focus:outline-none"
-          onClick={handleHistoryLeft}
-          disabled={!hasPrev}
-          aria-label="Previous"
-        >
-          <MdChevronLeft size={24} />
-        </button>
-        <button
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-1 bg-transparent text-gray-400 rounded-full opacity-30 group-hover:opacity-80 group-hover:bg-gray-600 group-hover:text-white transition-all duration-200 hover:bg-gray-700 hover:text-white focus:outline-none"
-          onClick={handleHistoryRight}
-          disabled={!hasNext}
-          aria-label="Next"
-        >
-          <MdChevronRight size={24} />
-        </button>
-        <textarea
-          className="w-full h-64 p-4 text-lg bg-slate-700 text-white border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Put the text here..."
-          autoFocus
-          value={value}
-          onChange={handleTextChange}
-        />
-      </div>
+      <TranslateArea />
+      <TypingInputArea
+        value={value}
+        setValue={setValue}
+        hasPrev={hasPrev}
+        hasNext={hasNext}
+        onPrev={handleHistoryLeft}
+        onNext={handleHistoryRight}
+        onClear={handleClearCurrent}
+        showClear={historyIndex !== -1}
+      />
       {message && <p className="text-red-500 mt-4">{message}</p>}
       <button
         className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"

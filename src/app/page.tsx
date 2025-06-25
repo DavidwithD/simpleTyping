@@ -13,10 +13,8 @@ export default function Home() {
   const [message, setMessage] = useState<string>("");
   const { originalText, setOriginalText, typingText, setTypingText } =
     useText();
-  const [translateValue, setTranslateValue] = useState<string>(
-    originalText || "",
-  );
-  const [typingValue, setTypingValue] = useState<string>(typingText || "");
+  const [translateValue, setTranslateValue] = useState<string>(originalText);
+  const [typingValue, setTypingValue] = useState<string>(typingText);
   const {
     history,
     historyIndex,
@@ -39,8 +37,8 @@ export default function Home() {
   const handleStartTyping = () => {
     const cleanedOriginal = trimAndReplaceNewLineAndTab(translateValue);
     const cleanedTyping = trimAndReplaceNewLineAndTab(typingValue);
-    if (!cleanedOriginal || !cleanedTyping) {
-      setMessage("Please enter both the original and translated text.");
+    if (!cleanedTyping) {
+      setMessage("Please enter the text to type.");
       return;
     }
     setMessage("");

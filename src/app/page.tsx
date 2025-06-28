@@ -6,7 +6,7 @@ import { useTypingHistory } from "./hooks/useTypingHistory";
 import TranslateArea from "./components/TranslateArea";
 import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
-import { trimAndReplaceNewLineAndTab } from "./utils/textUtils";
+import { trimAndReplaceNewLineAndTab, splitSentences } from "./utils/textUtils";
 
 export default function Home() {
   const router = useRouter();
@@ -35,10 +35,25 @@ export default function Home() {
   }, [historyIndex, history]);
 
   const handleStartTyping = () => {
-    const cleanedOriginal = trimAndReplaceNewLineAndTab(translateValue);
+    const cleanedOriginal = translateValue
+      ? trimAndReplaceNewLineAndTab(translateValue)
+      : "";
     const cleanedTyping = trimAndReplaceNewLineAndTab(typingValue);
     if (!cleanedTyping) {
       setMessage("Please enter the text to type.");
+      return;
+    }
+    // Sentence alignment check
+    const originalSentences = splitSentences(cleanedOriginal);
+    const typingSentences = splitSentences(cleanedTyping);
+    if (
+      cleanedOriginal &&
+      originalSentences.length !== typingSentences.length
+    ) {
+      // Store to localStorage for alignment page
+      localStorage.setItem("alignOriginal", cleanedOriginal);
+      localStorage.setItem("alignTyping", cleanedTyping);
+      router.push("/sentence-align");
       return;
     }
     setMessage("");

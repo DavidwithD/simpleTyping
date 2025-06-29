@@ -19,13 +19,11 @@ export default function HistoryControls({
   onNext,
   hasPrev,
   hasNext,
-  canClear,
 }: {
   onPrev: () => void;
   onNext: () => void;
   hasPrev: boolean;
   hasNext: boolean;
-  canClear: boolean;
 }) {
   return (
     <div className="flex items-center gap-4 mb-4">

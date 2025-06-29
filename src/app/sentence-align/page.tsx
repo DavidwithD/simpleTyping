@@ -1,16 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { splitSentences } from "../utils/textUtils";
-import { useText } from "../context/TextContext";
-import { useTypingHistory } from "../hooks/useTypingHistory";
-import { HISTORY_FOLDER_MAX_RECORDS } from "../constants/history";
 import StartTypingButton from "../components/StartTypingButton";
 
 export default function SentenceAlignPage() {
-  const router = useRouter();
-  const { setOriginalText, setTypingText } = useText();
-  const { addToHistory } = useTypingHistory();
   // Try to get texts from localStorage (or context if you prefer)
   const [originalText, setOriginalTextState] = useState(
     () => localStorage.getItem("alignOriginal") || "",
@@ -22,49 +15,6 @@ export default function SentenceAlignPage() {
   const originalSentences = splitSentences(originalText);
   const typingSentences = splitSentences(typingText);
   const countMatch = originalSentences.length === typingSentences.length;
-
-  const handleRecheck = () => {
-    // Save edits to localStorage
-    localStorage.setItem("alignOriginal", originalText);
-    localStorage.setItem("alignTyping", typingText);
-    if (countMatch) {
-      // Update context and history, then go to typing page
-      setOriginalText(originalText);
-      setTypingText(typingText);
-      // addToHistory is a no-op, so remove this call
-      localStorage.setItem(
-        "typingHistory",
-        JSON.stringify([{ originalText, typingText }]),
-      );
-      // --- Add to history folder ---
-      const key = `folderContents_history-folder`;
-      let items = [];
-      const itemsRaw = localStorage.getItem(key);
-      if (itemsRaw) {
-        items = JSON.parse(itemsRaw);
-        // Remove any previous record with same content
-        items = items.filter(
-          (item: any) =>
-            item.originalText !== originalText ||
-            item.typingText !== typingText,
-        );
-      }
-      // Add new record to end
-      items.push({
-        id: Date.now().toString(),
-        originalText,
-        typingText,
-        createdAt: Date.now(),
-      });
-      // Keep only the latest N
-      if (items.length > HISTORY_FOLDER_MAX_RECORDS) {
-        items = items.slice(items.length - HISTORY_FOLDER_MAX_RECORDS);
-      }
-      localStorage.setItem(key, JSON.stringify(items));
-      // --- End add to history folder ---
-      router.push("/typing");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">

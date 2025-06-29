@@ -44,7 +44,6 @@ export default function TypingPage() {
         router.push("/typing/finished");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identical.length, currentSentence.length, isLast, goNext, router]);
 
   useEffect(() => {

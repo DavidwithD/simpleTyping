@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Folder } from "../types";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
 
 export type TypingHistoryItem = {
@@ -39,8 +40,8 @@ export function useTypingHistory() {
     const stored = localStorage.getItem("typingFolders");
     let foldersArr = stored ? JSON.parse(stored) : [];
     // Ensure history folder exists
-    if (!foldersArr.some((f: any) => f.name === HISTORY_FOLDER_NAME)) {
-      const historyFolder = {
+    if (!foldersArr.some((f: Folder) => f.name === HISTORY_FOLDER_NAME)) {
+      const historyFolder: Folder = {
         id: "history-folder",
         name: HISTORY_FOLDER_NAME,
         createdAt: 0,

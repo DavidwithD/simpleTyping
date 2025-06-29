@@ -2,13 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
-
-// Folder type
-type Folder = {
-  id: string;
-  name: string;
-  createdAt: number;
-};
+import { Folder } from "../types";
 
 export default function FolderManagerPage() {
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -17,10 +11,10 @@ export default function FolderManagerPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem("typingFolders");
-    let foldersArr = stored ? JSON.parse(stored) : [];
+    let foldersArr: Folder[] = stored ? JSON.parse(stored) : [];
     // Ensure history folder exists
-    if (!foldersArr.some((f: any) => f.name === HISTORY_FOLDER_NAME)) {
-      const historyFolder = {
+    if (!foldersArr.some((f: Folder) => f.name === HISTORY_FOLDER_NAME)) {
+      const historyFolder: Folder = {
         id: "history-folder",
         name: HISTORY_FOLDER_NAME,
         createdAt: 0,
@@ -29,8 +23,8 @@ export default function FolderManagerPage() {
       localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
     }
     // Ensure default folder exists
-    if (!foldersArr.some((f: any) => f.name === "Default")) {
-      const defaultFolder = {
+    if (!foldersArr.some((f: Folder) => f.name === "Default")) {
+      const defaultFolder: Folder = {
         id: "default-folder",
         name: "Default",
         createdAt: Date.now(),
@@ -80,7 +74,7 @@ export default function FolderManagerPage() {
           <div className="text-gray-400">No folders yet.</div>
         ) : (
           <ul className="space-y-2">
-            {folders.map((folder) => (
+            {folders.map((folder: Folder) => (
               <li
                 key={folder.id}
                 className="flex items-center justify-between bg-slate-800 p-4 rounded cursor-pointer hover:bg-slate-700"

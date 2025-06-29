@@ -1,4 +1,13 @@
 import React from "react";
+import { useRouter } from "next/navigation";
+
+import {
+  trimAndReplaceNewLineAndTab,
+  splitSentences,
+} from "../utils/textUtils";
+import { HISTORY_FOLDER_MAX_RECORDS } from "../constants/history";
+import { useText } from "../context/TextContext";
+import { TypingHistoryItem } from "../types";
 
 interface StartTypingButtonProps {
   originalText: string;
@@ -7,11 +16,6 @@ interface StartTypingButtonProps {
   disabled?: boolean;
   children?: React.ReactNode;
 }
-
-import { useRouter } from "next/navigation";
-import { trimAndReplaceNewLineAndTab, splitSentences } from "../utils/textUtils";
-import { HISTORY_FOLDER_MAX_RECORDS } from "../constants/history";
-import { useText } from "../context/TextContext";
 
 export default function StartTypingButton({
   originalText,
@@ -24,12 +28,17 @@ export default function StartTypingButton({
   const { setOriginalText, setTypingText } = useText();
 
   const handleClick = () => {
-    const cleanedOriginal = originalText ? trimAndReplaceNewLineAndTab(originalText) : "";
+    const cleanedOriginal = originalText
+      ? trimAndReplaceNewLineAndTab(originalText)
+      : "";
     const cleanedTyping = trimAndReplaceNewLineAndTab(typingText);
     if (!cleanedTyping) return;
     const originalSentences = splitSentences(cleanedOriginal);
     const typingSentences = splitSentences(cleanedTyping);
-    if (cleanedOriginal && originalSentences.length !== typingSentences.length) {
+    if (
+      cleanedOriginal &&
+      originalSentences.length !== typingSentences.length
+    ) {
       // Store to localStorage for alignment page
       localStorage.setItem("alignOriginal", cleanedOriginal);
       localStorage.setItem("alignTyping", cleanedTyping);
@@ -40,12 +49,12 @@ export default function StartTypingButton({
     setTypingText(cleanedTyping);
     // Add to history folder
     const key = `folderContents_history-folder`;
-    let items = [];
+    let items: TypingHistoryItem[] = [];
     const itemsRaw = localStorage.getItem(key);
     if (itemsRaw) {
-      items = JSON.parse(itemsRaw);
+      items = JSON.parse(itemsRaw) as TypingHistoryItem[];
       items = items.filter(
-        (item: any) =>
+        (item: TypingHistoryItem) =>
           item.originalText !== cleanedOriginal ||
           item.typingText !== cleanedTyping,
       );

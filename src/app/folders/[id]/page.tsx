@@ -3,20 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useText } from "../../context/TextContext";
 import { HISTORY_FOLDER_NAME } from "../../constants/history";
-
-// Content type (history item)
-type TypingHistoryItem = {
-  id: string;
-  originalText: string;
-  typingText: string;
-  createdAt: number;
-};
-
-type Folder = {
-  id: string;
-  name: string;
-  createdAt: number;
-};
+import { Folder, TypingHistoryItem } from "../../types";
 
 export default function FolderContentsPage() {
   const router = useRouter();
@@ -33,19 +20,21 @@ export default function FolderContentsPage() {
     const foldersRaw = localStorage.getItem("typingFolders");
     if (foldersRaw) {
       const folders: Folder[] = JSON.parse(foldersRaw);
-      const found = folders.find((f) => f.id === folderId);
+      const found = folders.find((f: Folder) => f.id === folderId);
       if (found) setFolder(found);
     }
     // Load contents for this folder
     const key = `folderContents_${folderId}`;
     const itemsRaw = localStorage.getItem(key);
-    if (itemsRaw) setContents(JSON.parse(itemsRaw));
+    if (itemsRaw) setContents(JSON.parse(itemsRaw) as TypingHistoryItem[]);
   }, [folderId]);
 
   // Delete content by id
   const handleDelete = (id: string) => {
     const key = `folderContents_${folderId}`;
-    const newContents = contents.filter((item) => item.id !== id);
+    const newContents = contents.filter(
+      (item: TypingHistoryItem) => item.id !== id,
+    );
     setContents(newContents);
     localStorage.setItem(key, JSON.stringify(newContents));
   };
@@ -83,7 +72,7 @@ export default function FolderContentsPage() {
     // Remove folder from folders list
     const foldersRaw = localStorage.getItem("typingFolders");
     let foldersArr = foldersRaw ? JSON.parse(foldersRaw) : [];
-    foldersArr = foldersArr.filter((f: any) => f.id !== folder.id);
+    foldersArr = foldersArr.filter((f: Folder) => f.id !== folder.id);
     localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
     // Remove folder contents
     localStorage.removeItem(`folderContents_${folder.id}`);

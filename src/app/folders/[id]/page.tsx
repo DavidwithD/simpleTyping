@@ -102,7 +102,9 @@ export default function FolderContentsPage() {
       <h1 className="text-2xl text-white font-bold mb-2">
         {folder?.name || "Folder"}
       </h1>
-      {folder && folder.name !== HISTORY_FOLDER_NAME && folder.name !== "Default" ? (
+      {folder &&
+      folder.name !== HISTORY_FOLDER_NAME &&
+      folder.name !== "Default" ? (
         <button
           className="mb-4 px-3 py-1 bg-slate-700 text-gray-400 rounded hover:bg-slate-600 hover:text-red-500 text-xs border border-slate-600 transition"
           onClick={handleDeleteFolder}

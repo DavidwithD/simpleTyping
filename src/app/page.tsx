@@ -6,6 +6,7 @@ import { useTypingHistory } from "./hooks/useTypingHistory";
 import TranslateArea from "./components/TranslateArea";
 import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
+import StartTypingButton from "./components/StartTypingButton";
 import { trimAndReplaceNewLineAndTab, splitSentences } from "./utils/textUtils";
 import {
   HISTORY_FOLDER_NAME,
@@ -199,12 +200,11 @@ export default function Home() {
         hasNext={hasNext}
         canClear={historyIndex !== -1}
       />
-      <button
-        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        onClick={handleStartTyping}
-      >
-        Start Typing
-      </button>
+      <StartTypingButton
+        originalText={translateValue}
+        typingText={typingValue}
+        // Optionally, you can set onSuccess={() => setMessage("")}
+      />
       <div className="flex items-center gap-2 mt-6">
         <button
           className={`px-4 py-2 rounded ${addStatus === "added" ? "bg-green-600 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}`}

@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { splitSentences } from "../utils/textUtils";
 import { useText } from "../context/TextContext";
 import { useTypingHistory } from "../hooks/useTypingHistory";
+import { HISTORY_FOLDER_MAX_RECORDS } from "../constants/history";
+import StartTypingButton from "../components/StartTypingButton";
 
 export default function SentenceAlignPage() {
   const router = useRouter();
@@ -29,11 +31,37 @@ export default function SentenceAlignPage() {
       // Update context and history, then go to typing page
       setOriginalText(originalText);
       setTypingText(typingText);
-      addToHistory(originalText, typingText);
+      // addToHistory is a no-op, so remove this call
       localStorage.setItem(
         "typingHistory",
         JSON.stringify([{ originalText, typingText }]),
       );
+      // --- Add to history folder ---
+      const key = `folderContents_history-folder`;
+      let items = [];
+      const itemsRaw = localStorage.getItem(key);
+      if (itemsRaw) {
+        items = JSON.parse(itemsRaw);
+        // Remove any previous record with same content
+        items = items.filter(
+          (item: any) =>
+            item.originalText !== originalText ||
+            item.typingText !== typingText,
+        );
+      }
+      // Add new record to end
+      items.push({
+        id: Date.now().toString(),
+        originalText,
+        typingText,
+        createdAt: Date.now(),
+      });
+      // Keep only the latest N
+      if (items.length > HISTORY_FOLDER_MAX_RECORDS) {
+        items = items.slice(items.length - HISTORY_FOLDER_MAX_RECORDS);
+      }
+      localStorage.setItem(key, JSON.stringify(items));
+      // --- End add to history folder ---
       router.push("/typing");
     }
   };
@@ -82,13 +110,11 @@ export default function SentenceAlignPage() {
             the same number of sentences.
           </div>
         )}
-        <button
-          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+        <StartTypingButton
+          originalText={originalText}
+          typingText={typingText}
           disabled={!countMatch}
-          onClick={handleRecheck}
-        >
-          Start Typing
-        </button>
+        />
       </div>
     </div>
   );

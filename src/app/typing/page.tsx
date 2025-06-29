@@ -47,6 +47,21 @@ export default function TypingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identical.length, currentSentence.length, isLast, goNext, router]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) setPeeking(true);
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.ctrlKey && !e.metaKey) setPeeking(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
   if (!currentSentence) {
     return <div className="text-white text-center mt-10">No text to type.</div>;
   }

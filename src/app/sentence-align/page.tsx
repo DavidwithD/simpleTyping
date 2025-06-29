@@ -75,7 +75,7 @@ export default function SentenceAlignPage() {
           </ul>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col items-center gap-4">
         {!countMatch && (
           <div className="text-red-400 mb-2">
             Sentence count does not match! Please edit the texts so both have

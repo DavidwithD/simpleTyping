@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { HISTORY_FOLDER_NAME } from "../constants/history";
 
 export type TypingHistoryItem = {
   originalText: string;
@@ -13,11 +14,13 @@ export function useTypingHistory() {
 
   // Load history and last value from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem("typingHistory");
+    // Always load from history folder
+    const key = `folderContents_history-folder`;
+    const itemsRaw = localStorage.getItem(key);
     let arr: TypingHistoryItem[] = [];
-    if (stored) {
+    if (itemsRaw) {
       try {
-        arr = JSON.parse(stored);
+        arr = JSON.parse(itemsRaw);
       } catch {}
     }
     setHistory(arr);
@@ -29,6 +32,21 @@ export function useTypingHistory() {
       setOriginalText("");
       setTypingText("");
       setHistoryIndex(-1);
+    }
+  }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("typingFolders");
+    let foldersArr = stored ? JSON.parse(stored) : [];
+    // Ensure history folder exists
+    if (!foldersArr.some((f: any) => f.name === HISTORY_FOLDER_NAME)) {
+      const historyFolder = {
+        id: "history-folder",
+        name: HISTORY_FOLDER_NAME,
+        createdAt: 0,
+      };
+      foldersArr = [historyFolder, ...foldersArr];
+      localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
     }
   }, []);
 
@@ -55,39 +73,8 @@ export function useTypingHistory() {
     });
   };
 
-  const handleClearCurrent = () => {
-    if (historyIndex === -1 || history.length === 0) return;
-    const newHistory = history.filter((_, idx) => idx !== historyIndex);
-    localStorage.setItem("typingHistory", JSON.stringify(newHistory));
-    setHistory(newHistory);
-    if (newHistory.length === 0) {
-      setOriginalText("");
-      setTypingText("");
-      setHistoryIndex(-1);
-    } else if (historyIndex >= newHistory.length) {
-      setOriginalText(newHistory[newHistory.length - 1].originalText);
-      setTypingText(newHistory[newHistory.length - 1].typingText);
-      setHistoryIndex(newHistory.length - 1);
-    } else {
-      setOriginalText(newHistory[historyIndex].originalText);
-      setTypingText(newHistory[historyIndex].typingText);
-      setHistoryIndex(historyIndex);
-    }
-  };
-
-  const addToHistory = (original: string, typing: string) => {
-    const arr = [...history];
-    if (
-      arr.length === 0 ||
-      arr[arr.length - 1].originalText !== original ||
-      arr[arr.length - 1].typingText !== typing
-    ) {
-      arr.push({ originalText: original, typingText: typing });
-      localStorage.setItem("typingHistory", JSON.stringify(arr));
-      setHistory(arr);
-      setHistoryIndex(arr.length - 1);
-    }
-  };
+  // Remove addToHistory or make it a no-op, since history is now managed by the folder
+  const addToHistory = () => {};
 
   return {
     originalText,
@@ -100,7 +87,6 @@ export function useTypingHistory() {
     hasNext,
     handleHistoryLeft,
     handleHistoryRight,
-    handleClearCurrent,
     addToHistory,
     setHistory,
     setHistoryIndex,

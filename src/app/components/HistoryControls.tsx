@@ -17,14 +17,12 @@ function HistoryButton({
 export default function HistoryControls({
   onPrev,
   onNext,
-  onClear,
   hasPrev,
   hasNext,
   canClear,
 }: {
   onPrev: () => void;
   onNext: () => void;
-  onClear: () => void;
   hasPrev: boolean;
   hasNext: boolean;
   canClear: boolean;
@@ -37,13 +35,6 @@ export default function HistoryControls({
         disabled={!hasPrev}
       >
         Prev
-      </HistoryButton>
-      <HistoryButton
-        className="bg-red-600 hover:bg-red-700"
-        onClick={onClear}
-        disabled={!canClear}
-      >
-        Clear
       </HistoryButton>
       <HistoryButton
         className="bg-gray-600 hover:bg-gray-700"

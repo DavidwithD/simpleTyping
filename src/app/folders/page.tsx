@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useFolders } from "../hooks/useFolders";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
 import { Folder } from "../types";
 
 export default function FolderManagerPage() {
-  const [folders, setFolders] = useState<Folder[]>([]);
   const [newFolderName, setNewFolderName] = useState("");
   const router = useRouter();
+  const { folders, addFolder } = useFolders();
 
   useEffect(() => {
     const stored = localStorage.getItem("typingFolders");
@@ -32,19 +33,11 @@ export default function FolderManagerPage() {
       foldersArr = [...foldersArr, defaultFolder];
       localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
     }
-    setFolders(foldersArr);
   }, []);
 
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
-    const newFolder: Folder = {
-      id: Date.now().toString(),
-      name: newFolderName.trim(),
-      createdAt: Date.now(),
-    };
-    const updated = [...folders, newFolder];
-    setFolders(updated);
-    localStorage.setItem("typingFolders", JSON.stringify(updated));
+    addFolder(newFolderName.trim());
     setNewFolderName("");
   };
 

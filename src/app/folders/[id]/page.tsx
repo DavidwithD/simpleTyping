@@ -4,13 +4,17 @@ import { useRouter, useParams } from "next/navigation";
 import { useText } from "../../context/TextContext";
 import { HISTORY_FOLDER_NAME } from "../../constants/history";
 import { Folder, TypingHistoryItem } from "../../types";
+import { useFolders } from "../../hooks/useFolders";
+import { useFolderContents } from "../../hooks/useFolderContents";
 
 export default function FolderContentsPage() {
   const router = useRouter();
   const params = useParams();
   const folderId = params?.id as string;
   const [folder, setFolder] = useState<Folder | null>(null);
-  const [contents, setContents] = useState<TypingHistoryItem[]>([]);
+  const { folders, deleteFolder } = useFolders();
+  const { contents, addContent, deleteContent, setContents } =
+    useFolderContents(folderId);
   const { setOriginalText, setTypingText } = useText();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -23,20 +27,12 @@ export default function FolderContentsPage() {
       const found = folders.find((f: Folder) => f.id === folderId);
       if (found) setFolder(found);
     }
-    // Load contents for this folder
-    const key = `folderContents_${folderId}`;
-    const itemsRaw = localStorage.getItem(key);
-    if (itemsRaw) setContents(JSON.parse(itemsRaw) as TypingHistoryItem[]);
+    // No need to manually load contents, useFolderContents handles it
   }, [folderId]);
 
   // Delete content by id
   const handleDelete = (id: string) => {
-    const key = `folderContents_${folderId}`;
-    const newContents = contents.filter(
-      (item: TypingHistoryItem) => item.id !== id,
-    );
-    setContents(newContents);
-    localStorage.setItem(key, JSON.stringify(newContents));
+    deleteContent(id);
   };
 
   // Start typing with this content

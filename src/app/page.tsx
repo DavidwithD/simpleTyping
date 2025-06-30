@@ -2,6 +2,9 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTypingHistory } from "./hooks/useTypingHistory";
+import { useFolders } from "./hooks/useFolders";
+import { useFolderContents } from "./hooks/useFolderContents";
+import { useHistoryFolder } from "./hooks/useHistoryFolder";
 import TranslateArea from "./components/TranslateArea";
 import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
@@ -21,6 +24,10 @@ export default function Home() {
     handleHistoryLeft,
     handleHistoryRight,
   } = useTypingHistory();
+  const { folders } = useFolders();
+  const [selectedFolderId, setSelectedFolderId] = useState<string>("");
+  const { addContent } = useFolderContents(selectedFolderId);
+  const { addHistory } = useHistoryFolder();
 
   // When historyIndex changes, update the textareas with the corresponding history values
   useEffect(() => {
@@ -31,42 +38,39 @@ export default function Home() {
   }, [historyIndex, history]);
 
   // Folder management for Add-to-folder feature
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [selectedFolderId, setSelectedFolderId] = useState<string>("");
   const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
 
   useEffect(() => {
-    const stored = localStorage.getItem("typingFolders");
-    let foldersArr: Folder[] = stored ? JSON.parse(stored) : [];
     // Ensure history folder exists
-    if (!foldersArr.some((f: Folder) => f.name === HISTORY_FOLDER_NAME)) {
+    if (!folders.some((f: Folder) => f.name === HISTORY_FOLDER_NAME)) {
       const historyFolder: Folder = {
         id: "history-folder",
         name: HISTORY_FOLDER_NAME,
         createdAt: 0,
       };
-      foldersArr = [historyFolder, ...foldersArr];
-      localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
+      localStorage.setItem(
+        "typingFolders",
+        JSON.stringify([historyFolder, ...folders]),
+      );
     }
     // Ensure default folder exists
-    if (!foldersArr.some((f: Folder) => f.name === "Default")) {
+    if (!folders.some((f: Folder) => f.name === "Default")) {
       const defaultFolder: Folder = {
         id: "default-folder",
         name: "Default",
         createdAt: Date.now(),
       };
-      foldersArr = [...foldersArr, defaultFolder];
-      localStorage.setItem("typingFolders", JSON.stringify(foldersArr));
+      localStorage.setItem(
+        "typingFolders",
+        JSON.stringify([...folders, defaultFolder]),
+      );
     }
-    setFolders(foldersArr);
     // Set default folder as selected if not set
     if (!selectedFolderId) {
-      const defaultFolder = foldersArr.find(
-        (f: Folder) => f.name === "Default",
-      );
+      const defaultFolder = folders.find((f: Folder) => f.name === "Default");
       if (defaultFolder) setSelectedFolderId(defaultFolder.id);
     }
-  }, [selectedFolderId, setSelectedFolderId]);
+  }, [selectedFolderId, setSelectedFolderId, folders]);
 
   // Check if current content is already in selected folder
   useEffect(() => {
@@ -91,32 +95,32 @@ export default function Home() {
 
   const handleAddToFolder = () => {
     if (!selectedFolderId) return;
-    const key = `folderContents_${selectedFolderId}`;
-    const itemsRaw = localStorage.getItem(key);
-    const newItem: TypingHistoryItem = {
+    const newItem = {
       id: Date.now().toString(),
       originalText: translateValue,
       typingText: typingValue,
       createdAt: Date.now(),
     };
-    let items: TypingHistoryItem[] = [];
-    if (itemsRaw) {
-      items = JSON.parse(itemsRaw) as TypingHistoryItem[];
-      // Prevent duplicate
-      if (
-        items.some(
-          (item: TypingHistoryItem) =>
-            item.originalText === translateValue &&
-            item.typingText === typingValue,
-        )
-      ) {
-        setAddStatus("added");
-        return;
-      }
-    }
-    items.push(newItem);
-    localStorage.setItem(key, JSON.stringify(items));
+    addContent(newItem);
     setAddStatus("added");
+  };
+
+  const handleStartTyping = () => {
+    const cleanedOriginal = translateValue.trim();
+    const cleanedTyping = typingValue.trim();
+    if (!cleanedOriginal || !cleanedTyping) return;
+
+    // Add to history folder
+    const newItem = {
+      id: Date.now().toString(),
+      originalText: cleanedOriginal,
+      typingText: cleanedTyping,
+      createdAt: Date.now(),
+    };
+    addHistory(newItem);
+
+    // Navigate to /typing page with state
+    router.push("/typing");
   };
 
   return (
@@ -140,7 +144,6 @@ export default function Home() {
       <StartTypingButton
         originalText={translateValue}
         typingText={typingValue}
-        // Optionally, you can set onSuccess={() => setMessage("")}
       />
       <div className="flex items-center gap-2 mt-6">
         <button

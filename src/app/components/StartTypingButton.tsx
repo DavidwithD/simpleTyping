@@ -42,7 +42,11 @@ export default function StartTypingButton({
       // Store to localStorage for alignment page
       localStorage.setItem("alignOriginal", cleanedOriginal);
       localStorage.setItem("alignTyping", cleanedTyping);
-      router.push("/sentence-align");
+      const params = new URLSearchParams({
+        original: cleanedOriginal,
+        typing: cleanedTyping,
+      }).toString();
+      router.push(`/sentence-align?${params}`);
       return;
     }
     setOriginalText(cleanedOriginal);

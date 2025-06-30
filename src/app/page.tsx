@@ -11,7 +11,7 @@ import StartTypingButton from "./components/StartTypingButton";
 import { HISTORY_FOLDER_NAME } from "./constants/history";
 import { Folder, TypingHistoryItem } from "./types";
 
-export default function Home() {
+export default function HomePage() {
   const router = useRouter();
   const [translateValue, setTranslateValue] = useState<string>("");
   const [typingValue, setTypingValue] = useState<string>("");

@@ -1,16 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { splitSentences } from "../utils/textUtils";
 import StartTypingButton from "../components/StartTypingButton";
 
-export default function SentenceAlignPage() {
-  // Try to get texts from localStorage (or context if you prefer)
-  const [originalText, setOriginalTextState] = useState(
-    () => localStorage.getItem("alignOriginal") || "",
-  );
-  const [typingText, setTypingTextState] = useState(
-    () => localStorage.getItem("alignTyping") || "",
-  );
+type SentenceAlignPageProps = {
+  searchParams: Promise<{ [key: string]: string }>;
+};
+
+export default function SentenceAlignPage({
+  searchParams,
+}: SentenceAlignPageProps) {
+  const { original, typing } = use(searchParams);
+  const [originalText, setOriginalTextState] = useState(original || "");
+  const [typingText, setTypingTextState] = useState(typing || "");
 
   const originalSentences = splitSentences(originalText);
   const typingSentences = splitSentences(typingText);

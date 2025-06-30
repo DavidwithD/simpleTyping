@@ -4,7 +4,6 @@ import { useRouter, useParams } from "next/navigation";
 import { useText } from "../../context/TextContext";
 import { HISTORY_FOLDER_NAME } from "../../constants/history";
 import { Folder, TypingHistoryItem } from "../../types";
-import { useFolders } from "../../hooks/useFolders";
 import { useFolderContents } from "../../hooks/useFolderContents";
 
 export default function FolderContentsPage() {
@@ -12,9 +11,7 @@ export default function FolderContentsPage() {
   const params = useParams();
   const folderId = params?.id as string;
   const [folder, setFolder] = useState<Folder | null>(null);
-  const { folders, deleteFolder } = useFolders();
-  const { contents, addContent, deleteContent, setContents } =
-    useFolderContents(folderId);
+  const { contents, deleteContent } = useFolderContents(folderId);
   const { setOriginalText, setTypingText } = useText();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteError, setDeleteError] = useState("");

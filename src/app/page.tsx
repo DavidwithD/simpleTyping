@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useTypingHistory } from "./hooks/useTypingHistory";
 import { useFolders } from "./hooks/useFolders";
 import { useFolderContents } from "./hooks/useFolderContents";
-import { useHistoryFolder } from "./hooks/useHistoryFolder";
 import TranslateArea from "./components/TranslateArea";
 import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
@@ -27,7 +26,6 @@ export default function Home() {
   const { folders } = useFolders();
   const [selectedFolderId, setSelectedFolderId] = useState<string>("");
   const { addContent } = useFolderContents(selectedFolderId);
-  const { addHistory } = useHistoryFolder();
 
   // When historyIndex changes, update the textareas with the corresponding history values
   useEffect(() => {
@@ -103,24 +101,6 @@ export default function Home() {
     };
     addContent(newItem);
     setAddStatus("added");
-  };
-
-  const handleStartTyping = () => {
-    const cleanedOriginal = translateValue.trim();
-    const cleanedTyping = typingValue.trim();
-    if (!cleanedOriginal || !cleanedTyping) return;
-
-    // Add to history folder
-    const newItem = {
-      id: Date.now().toString(),
-      originalText: cleanedOriginal,
-      typingText: cleanedTyping,
-      createdAt: Date.now(),
-    };
-    addHistory(newItem);
-
-    // Navigate to /typing page with state
-    router.push("/typing");
   };
 
   return (

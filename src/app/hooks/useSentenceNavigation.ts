@@ -12,7 +12,7 @@ export function useSentenceNavigation(typingText: string, hintText: string) {
     [hintText],
   );
   const currentSentence = sentences[sentenceIndex] || "";
-  const currentOriginal = hintSentences[sentenceIndex] || "";
+  const currentHint = hintSentences[sentenceIndex] || "";
   const isLast = sentenceIndex === sentences.length - 1;
 
   const goNext = () => {
@@ -29,7 +29,7 @@ export function useSentenceNavigation(typingText: string, hintText: string) {
     sentences,
     hintSentences,
     currentSentence,
-    currentOriginal,
+    currentHint,
     sentenceIndex,
     isLast,
     goNext,

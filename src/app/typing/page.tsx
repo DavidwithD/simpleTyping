@@ -19,7 +19,7 @@ export default function TypingPage() {
   const {
     sentences,
     currentSentence,
-    currentOriginal,
+    currentHint,
     sentenceIndex,
     isLast,
     goNext,
@@ -69,9 +69,9 @@ export default function TypingPage() {
     <div className="flex flex-col min-h-screen">
       {/* Top half: hint sentence */}
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-800">
-        {currentOriginal && (
+        {currentHint && (
           <div className="max-w-2xl p-4 rounded-lg text-xl text-gray-200 break-all">
-            {currentOriginal}
+            {currentHint}
           </div>
         )}
       </div>

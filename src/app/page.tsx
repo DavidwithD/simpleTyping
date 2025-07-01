@@ -2,13 +2,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTypingHistory } from "../hooks/useTypingHistory";
-import { useFolders } from "../hooks/useFolders";
-import { useFolderContents } from "../hooks/useFolderContents";
 import TranslateArea from "../components/TranslateArea";
 import TypingInputArea from "../components/TypingInputArea";
 import HistoryControls from "../components/HistoryControls";
 import StartTypingButton from "../components/StartTypingButton";
-import AddToFolder from "../components/AddToFolder";
 
 export default function HomePage() {
   const router = useRouter();
@@ -22,9 +19,6 @@ export default function HomePage() {
     handleHistoryLeft,
     handleHistoryRight,
   } = useTypingHistory();
-  const { folders } = useFolders();
-  const [selectedFolderId, setSelectedFolderId] = useState<string>("");
-  const { addContent } = useFolderContents(selectedFolderId);
 
   // When historyIndex changes, update the textareas with the corresponding history values
   useEffect(() => {
@@ -33,17 +27,6 @@ export default function HomePage() {
       setTypingValue(history[historyIndex].typingText);
     }
   }, [historyIndex, history]);
-
-  const handleAddToFolder = () => {
-    if (!selectedFolderId) return;
-    const newItem = {
-      id: Date.now().toString(),
-      hintText: hintValue,
-      typingText: typingValue,
-      createdAt: Date.now(),
-    };
-    addContent(newItem);
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 p-4">
@@ -64,14 +47,6 @@ export default function HomePage() {
         hasNext={hasNext}
       />
       <StartTypingButton hintText={hintValue} typingText={typingValue} />
-      <AddToFolder
-        folders={folders}
-        selectedFolderId={selectedFolderId}
-        setSelectedFolderId={setSelectedFolderId}
-        hintValue={hintValue}
-        typingValue={typingValue}
-        handleAddToFolder={handleAddToFolder}
-      />
     </div>
   );
 }

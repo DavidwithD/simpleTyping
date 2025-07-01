@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useFolders } from "../../hooks/useFolders";
 import { HISTORY_FOLDER_NAME } from "../../constants/history";
 import { Folder } from "../../types";
-import { FaArrowLeft } from "react-icons/fa";
+import { TypingHistoryItem } from "../../types";
+import { FaArrowLeft, FaDownload, FaUpload } from "react-icons/fa";
 
 export default function FolderManagerPage() {
   const [newFolderName, setNewFolderName] = useState("");
@@ -46,6 +47,93 @@ export default function FolderManagerPage() {
     router.push(`/folders/${id}`);
   };
 
+  const handleExportData = () => {
+    // Get all folders
+    const foldersData = localStorage.getItem("typingFolders");
+    const folders = foldersData ? JSON.parse(foldersData) : [];
+
+    // Get all folder contents
+    const allData: {
+      folders: Folder[];
+      folderContents: { [key: string]: TypingHistoryItem[] };
+    } = {
+      folders: folders,
+      folderContents: {},
+    };
+
+    folders.forEach((folder: Folder) => {
+      const contentsKey = `folderContents_${folder.id}`;
+      const contents = localStorage.getItem(contentsKey);
+      if (contents) {
+        allData.folderContents[folder.id] = JSON.parse(contents);
+      }
+    });
+
+    // Create and download JSON file
+    const dataStr = JSON.stringify(allData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `typing-folders-backup-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+
+        // Validate data structure
+        if (!data.folders || !Array.isArray(data.folders)) {
+          alert("Invalid file format: missing folders array");
+          return;
+        }
+
+        // Confirm import
+        if (
+          !confirm(
+            "This will replace all existing folders and their contents. Are you sure?",
+          )
+        ) {
+          return;
+        }
+
+        // Import folders
+        localStorage.setItem("typingFolders", JSON.stringify(data.folders));
+
+        // Import folder contents
+        if (data.folderContents) {
+          Object.keys(data.folderContents).forEach((folderId) => {
+            const contentsKey = `folderContents_${folderId}`;
+            localStorage.setItem(
+              contentsKey,
+              JSON.stringify(data.folderContents[folderId]),
+            );
+          });
+        }
+
+        alert("Data imported successfully! The page will refresh.");
+        window.location.reload();
+      } catch (error) {
+        alert("Error importing file: Invalid JSON format");
+        console.error("Import error:", error);
+      }
+    };
+    reader.readAsText(file);
+
+    // Reset input
+    event.target.value = "";
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 p-6 flex flex-col items-center">
       <button
@@ -56,6 +144,28 @@ export default function FolderManagerPage() {
         Back to Home
       </button>
       <h1 className="text-2xl text-white font-bold mb-6">Manage Folders</h1>
+
+      {/* Export/Import Section */}
+      <div className="flex gap-2 mb-4">
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-2"
+          onClick={handleExportData}
+        >
+          <FaDownload />
+          Export All Data
+        </button>
+        <label className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 cursor-pointer flex items-center gap-2">
+          <FaUpload />
+          Import Data
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleImportData}
+            className="hidden"
+          />
+        </label>
+      </div>
+
       <div className="flex gap-2 mb-6">
         <input
           className="p-2 rounded bg-slate-700 text-white"

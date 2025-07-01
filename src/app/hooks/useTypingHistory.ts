@@ -3,14 +3,14 @@ import { Folder } from "../types";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
 
 export type TypingHistoryItem = {
-  originalText: string;
+  hintText: string;
   typingText: string;
 };
 
 export function useTypingHistory() {
   const [history, setHistory] = useState<TypingHistoryItem[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
-  const [originalText, setOriginalText] = useState<string>("");
+  const [hintText, setHintText] = useState<string>("");
   const [typingText, setTypingText] = useState<string>("");
 
   // Load history and last value from localStorage on mount
@@ -26,11 +26,11 @@ export function useTypingHistory() {
     }
     setHistory(arr);
     if (arr.length > 0) {
-      setOriginalText(arr[arr.length - 1].originalText);
+      setHintText(arr[arr.length - 1].hintText);
       setTypingText(arr[arr.length - 1].typingText);
       setHistoryIndex(arr.length - 1);
     } else {
-      setOriginalText("");
+      setHintText("");
       setTypingText("");
       setHistoryIndex(-1);
     }
@@ -58,7 +58,7 @@ export function useTypingHistory() {
     if (history.length === 0) return;
     setHistoryIndex((idx) => {
       const newIdx = Math.max(0, idx - 1);
-      setOriginalText(history[newIdx].originalText);
+      setHintText(history[newIdx].hintText);
       setTypingText(history[newIdx].typingText);
       return newIdx;
     });
@@ -68,7 +68,7 @@ export function useTypingHistory() {
     if (history.length === 0) return;
     setHistoryIndex((idx) => {
       const newIdx = Math.min(history.length - 1, idx + 1);
-      setOriginalText(history[newIdx].originalText);
+      setHintText(history[newIdx].hintText);
       setTypingText(history[newIdx].typingText);
       return newIdx;
     });
@@ -78,8 +78,8 @@ export function useTypingHistory() {
   const addToHistory = () => {};
 
   return {
-    originalText,
-    setOriginalText,
+    hintText,
+    setHintText,
     typingText,
     setTypingText,
     history,

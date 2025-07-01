@@ -7,11 +7,14 @@ export default function FinishedPage() {
   const [selectedFolderId, setSelectedFolderId] = useState<string>(
     folders.find((f) => f.name === "Default")?.id || "",
   );
-  const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
+
+  // Dummy values for demonstration; replace with real values as needed
+  const hintValue = "";
+  const typingValue = "";
 
   // Dummy handler for demonstration; you may want to pass real data
   const handleAddToFolder = () => {
-    setAddStatus("added");
+    // Implement add logic here
   };
 
   return (
@@ -34,7 +37,8 @@ export default function FinishedPage() {
           folders={folders}
           selectedFolderId={selectedFolderId}
           setSelectedFolderId={setSelectedFolderId}
-          addStatus={addStatus}
+          hintValue={hintValue}
+          typingValue={typingValue}
           handleAddToFolder={handleAddToFolder}
         />
       </div>

@@ -1,6 +1,6 @@
 export type TypingHistoryItem = {
   id: string;
-  originalText: string;
+  hintText: string;
   typingText: string;
   createdAt: number;
 };

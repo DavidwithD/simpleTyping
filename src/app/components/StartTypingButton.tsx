@@ -10,7 +10,7 @@ import { useText } from "../context/TextContext";
 import { TypingHistoryItem } from "../types";
 
 interface StartTypingButtonProps {
-  originalText: string;
+  hintText: string;
   typingText: string;
   onSuccess?: () => void;
   disabled?: boolean;
@@ -18,38 +18,33 @@ interface StartTypingButtonProps {
 }
 
 export default function StartTypingButton({
-  originalText,
+  hintText,
   typingText,
   onSuccess,
   disabled,
   children,
 }: StartTypingButtonProps) {
   const router = useRouter();
-  const { setOriginalText, setTypingText } = useText();
+  const { setHintText, setTypingText } = useText();
 
   const handleClick = () => {
-    const cleanedOriginal = originalText
-      ? trimAndReplaceNewLineAndTab(originalText)
-      : "";
+    const cleanedHint = hintText ? trimAndReplaceNewLineAndTab(hintText) : "";
     const cleanedTyping = trimAndReplaceNewLineAndTab(typingText);
     if (!cleanedTyping) return;
-    const originalSentences = splitSentences(cleanedOriginal);
+    const hintSentences = splitSentences(cleanedHint);
     const typingSentences = splitSentences(cleanedTyping);
-    if (
-      cleanedOriginal &&
-      originalSentences.length !== typingSentences.length
-    ) {
+    if (cleanedHint && hintSentences.length !== typingSentences.length) {
       // Store to localStorage for alignment page
-      localStorage.setItem("alignOriginal", cleanedOriginal);
+      localStorage.setItem("alignHint", cleanedHint);
       localStorage.setItem("alignTyping", cleanedTyping);
       const params = new URLSearchParams({
-        original: cleanedOriginal,
+        hint: cleanedHint,
         typing: cleanedTyping,
       }).toString();
       router.push(`/sentence-align?${params}`);
       return;
     }
-    setOriginalText(cleanedOriginal);
+    setHintText(cleanedHint);
     setTypingText(cleanedTyping);
     // Add to history folder
     const key = `folderContents_history-folder`;
@@ -59,13 +54,12 @@ export default function StartTypingButton({
       items = JSON.parse(itemsRaw) as TypingHistoryItem[];
       items = items.filter(
         (item: TypingHistoryItem) =>
-          item.originalText !== cleanedOriginal ||
-          item.typingText !== cleanedTyping,
+          item.hintText !== cleanedHint || item.typingText !== cleanedTyping,
       );
     }
     items.push({
       id: Date.now().toString(),
-      originalText: cleanedOriginal,
+      hintText: cleanedHint,
       typingText: cleanedTyping,
       createdAt: Date.now(),
     });

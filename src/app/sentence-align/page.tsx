@@ -12,24 +12,21 @@ type SentenceAlignPageProps = {
 export default function SentenceAlignPage({
   searchParams,
 }: SentenceAlignPageProps) {
-  const { original, typing } = use(searchParams);
-  const [originalText, setOriginalTextState] = useState(original || "");
+  const { hint, typing } = use(searchParams);
+  const [hintText, setHintTextState] = useState(hint || "");
   const [typingText, setTypingTextState] = useState(typing || "");
 
-  const originalSentences = splitSentences(originalText);
+  const hintSentences = splitSentences(hintText);
   const typingSentences = splitSentences(typingText);
-  const countMatch = originalSentences.length === typingSentences.length;
+  const countMatch = hintSentences.length === typingSentences.length;
 
   const { folders } = useFolders();
   const [selectedFolderId, setSelectedFolderId] = useState<string>(
     folders.find((f) => f.name === "Default")?.id || "",
   );
-  const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
 
   // Dummy handler for demonstration; you may want to pass real data
-  const handleAddToFolder = () => {
-    setAddStatus("added");
-  };
+  const handleAddToFolder = () => {};
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
@@ -38,14 +35,14 @@ export default function SentenceAlignPage({
       </h1>
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
         <div className="flex-1">
-          <h2 className="text-lg text-gray-300 mb-2">Original Text</h2>
+          <h2 className="text-lg text-gray-300 mb-2">Hint Text</h2>
           <textarea
             className="w-full h-40 p-2 bg-slate-700 text-white rounded mb-2"
-            value={originalText}
-            onChange={(e) => setOriginalTextState(e.target.value)}
+            value={hintText}
+            onChange={(e) => setHintTextState(e.target.value)}
           />
           <ul className="text-gray-400 text-sm space-y-1">
-            {originalSentences.map((s, i) => (
+            {hintSentences.map((s, i) => (
               <li key={i}>
                 {i + 1}. {s}
               </li>
@@ -76,7 +73,7 @@ export default function SentenceAlignPage({
           </div>
         )}
         <StartTypingButton
-          originalText={originalText}
+          hintText={hintText}
           typingText={typingText}
           disabled={!countMatch}
         />
@@ -84,8 +81,9 @@ export default function SentenceAlignPage({
           folders={folders}
           selectedFolderId={selectedFolderId}
           setSelectedFolderId={setSelectedFolderId}
-          addStatus={addStatus}
           handleAddToFolder={handleAddToFolder}
+          hintValue={hintText}
+          typingValue={typingText}
         />
       </div>
     </div>

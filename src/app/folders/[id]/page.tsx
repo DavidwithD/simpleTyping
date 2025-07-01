@@ -13,7 +13,7 @@ export default function FolderContentsPage() {
   const folderId = params?.id as string;
   const [folder, setFolder] = useState<Folder | null>(null);
   const { contents, deleteContent } = useFolderContents(folderId);
-  const { setOriginalText, setTypingText } = useText();
+  const { setHintText, setTypingText } = useText();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
@@ -35,13 +35,13 @@ export default function FolderContentsPage() {
 
   // Start typing with this content
   const handleStartTyping = (item: TypingHistoryItem) => {
-    setOriginalText(item.originalText);
+    setHintText(item.hintText);
     setTypingText(item.typingText);
     // Optionally, update typingHistory as well
     localStorage.setItem(
       "typingHistory",
       JSON.stringify([
-        { originalText: item.originalText, typingText: item.typingText },
+        { originalText: item.hintText, typingText: item.typingText },
       ]),
     );
     router.push("/typing");
@@ -160,7 +160,7 @@ export default function FolderContentsPage() {
                     Original:
                   </span>
                   <div className="text-gray-200 whitespace-nowrap overflow-hidden text-ellipsis text-base bg-slate-700 rounded p-2 mt-1 max-w-full">
-                    {item.originalText}
+                    {item.hintText}
                   </div>
                 </div>
                 <div>

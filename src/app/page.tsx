@@ -9,12 +9,10 @@ import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
 import StartTypingButton from "./components/StartTypingButton";
 import AddToFolder from "./components/AddToFolder";
-import { HISTORY_FOLDER_NAME } from "./constants/history";
-import { Folder, TypingHistoryItem } from "./types";
 
 export default function HomePage() {
   const router = useRouter();
-  const [translateValue, setTranslateValue] = useState<string>("");
+  const [hintValue, setHintValue] = useState<string>("");
   const [typingValue, setTypingValue] = useState<string>("");
   const {
     history,
@@ -31,77 +29,20 @@ export default function HomePage() {
   // When historyIndex changes, update the textareas with the corresponding history values
   useEffect(() => {
     if (historyIndex !== -1 && history[historyIndex]) {
-      setTranslateValue(history[historyIndex].originalText);
+      setHintValue(history[historyIndex].hintText);
       setTypingValue(history[historyIndex].typingText);
     }
   }, [historyIndex, history]);
-
-  // Folder management for Add-to-folder feature
-  const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
-
-  useEffect(() => {
-    // Ensure history folder exists
-    if (!folders.some((f: Folder) => f.name === HISTORY_FOLDER_NAME)) {
-      const historyFolder: Folder = {
-        id: "history-folder",
-        name: HISTORY_FOLDER_NAME,
-        createdAt: 0,
-      };
-      localStorage.setItem(
-        "typingFolders",
-        JSON.stringify([historyFolder, ...folders]),
-      );
-    }
-    // Ensure default folder exists
-    if (!folders.some((f: Folder) => f.name === "Default")) {
-      const defaultFolder: Folder = {
-        id: "default-folder",
-        name: "Default",
-        createdAt: Date.now(),
-      };
-      localStorage.setItem(
-        "typingFolders",
-        JSON.stringify([...folders, defaultFolder]),
-      );
-    }
-    // Set default folder as selected if not set
-    if (!selectedFolderId) {
-      const defaultFolder = folders.find((f: Folder) => f.name === "Default");
-      if (defaultFolder) setSelectedFolderId(defaultFolder.id);
-    }
-  }, [selectedFolderId, setSelectedFolderId, folders]);
-
-  // Check if current content is already in selected folder
-  useEffect(() => {
-    if (!selectedFolderId) {
-      setAddStatus("idle");
-      return;
-    }
-    const key = `folderContents_${selectedFolderId}`;
-    const itemsRaw = localStorage.getItem(key);
-    if (itemsRaw) {
-      const items = JSON.parse(itemsRaw);
-      const exists = items.some(
-        (item: TypingHistoryItem) =>
-          item.originalText === translateValue &&
-          item.typingText === typingValue,
-      );
-      setAddStatus(exists ? "added" : "idle");
-    } else {
-      setAddStatus("idle");
-    }
-  }, [selectedFolderId, translateValue, typingValue]);
 
   const handleAddToFolder = () => {
     if (!selectedFolderId) return;
     const newItem = {
       id: Date.now().toString(),
-      originalText: translateValue,
+      hintText: hintValue,
       typingText: typingValue,
       createdAt: Date.now(),
     };
     addContent(newItem);
-    setAddStatus("added");
   };
 
   return (
@@ -114,7 +55,7 @@ export default function HomePage() {
         Manage Folders
       </button>
 
-      <TranslateArea value={translateValue} setValue={setTranslateValue} />
+      <TranslateArea value={hintValue} setValue={setHintValue} />
       <TypingInputArea value={typingValue} setValue={setTypingValue} />
       <HistoryControls
         onPrev={handleHistoryLeft}
@@ -122,15 +63,13 @@ export default function HomePage() {
         hasPrev={hasPrev}
         hasNext={hasNext}
       />
-      <StartTypingButton
-        originalText={translateValue}
-        typingText={typingValue}
-      />
+      <StartTypingButton hintText={hintValue} typingText={typingValue} />
       <AddToFolder
         folders={folders}
         selectedFolderId={selectedFolderId}
         setSelectedFolderId={setSelectedFolderId}
-        addStatus={addStatus}
+        hintValue={hintValue}
+        typingValue={typingValue}
         handleAddToFolder={handleAddToFolder}
       />
     </div>

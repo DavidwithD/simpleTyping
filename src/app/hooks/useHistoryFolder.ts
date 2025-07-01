@@ -15,9 +15,7 @@ export function useHistoryFolder() {
   const addHistory = (item: TypingHistoryItem) => {
     const key = `folderContents_history-folder`;
     let updated = history.filter(
-      (h) =>
-        h.originalText !== item.originalText ||
-        h.typingText !== item.typingText,
+      (h) => h.hintText !== item.hintText || h.typingText !== item.typingText,
     );
     updated.push(item);
     if (updated.length > HISTORY_FOLDER_MAX_RECORDS) {

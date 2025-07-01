@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type TextContextType = {
-  originalText: string;
-  setOriginalText: (value: string) => void;
+  hintText: string;
+  setHintText: (value: string) => void;
   typingText: string;
   setTypingText: (value: string) => void;
 };
@@ -12,11 +12,11 @@ type TextContextType = {
 const TextContext = createContext<TextContextType | undefined>(undefined);
 
 export function TextProvider({ children }: { children: ReactNode }) {
-  const [originalText, setOriginalText] = useState<string>("");
+  const [hintText, setHintText] = useState<string>("");
   const [typingText, setTypingText] = useState<string>("");
   return (
     <TextContext.Provider
-      value={{ originalText, setOriginalText, typingText, setTypingText }}
+      value={{ hintText, setHintText, typingText, setTypingText }}
     >
       {children}
     </TextContext.Provider>

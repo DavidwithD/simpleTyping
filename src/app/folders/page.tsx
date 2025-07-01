@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useFolders } from "../hooks/useFolders";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
 import { Folder } from "../types";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function FolderManagerPage() {
   const [newFolderName, setNewFolderName] = useState("");
@@ -47,6 +48,13 @@ export default function FolderManagerPage() {
 
   return (
     <div className="min-h-screen bg-slate-900 p-6 flex flex-col items-center">
+      <button
+        className="self-start mb-4 text-blue-400 hover:underline flex items-center gap-2"
+        onClick={() => router.push("/")}
+      >
+        <FaArrowLeft />
+        Back to Home
+      </button>
       <h1 className="text-2xl text-white font-bold mb-6">Manage Folders</h1>
       <div className="flex gap-2 mb-6">
         <input

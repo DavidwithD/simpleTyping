@@ -8,6 +8,7 @@ import TranslateArea from "./components/TranslateArea";
 import TypingInputArea from "./components/TypingInputArea";
 import HistoryControls from "./components/HistoryControls";
 import StartTypingButton from "./components/StartTypingButton";
+import AddToFolder from "./components/AddToFolder";
 import { HISTORY_FOLDER_NAME } from "./constants/history";
 import { Folder, TypingHistoryItem } from "./types";
 
@@ -125,31 +126,13 @@ export default function HomePage() {
         originalText={translateValue}
         typingText={typingValue}
       />
-      <div className="flex items-center gap-2 mt-6">
-        <button
-          className={`px-4 py-2 rounded ${addStatus === "added" ? "bg-green-600 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-          disabled={!selectedFolderId || addStatus === "added"}
-          onClick={handleAddToFolder}
-        >
-          {addStatus === "added" ? "added" : "Add"}
-        </button>
-        <span className="text-white">to</span>
-        <select
-          className="p-2 rounded bg-slate-700 text-white"
-          value={selectedFolderId}
-          onChange={(e) => setSelectedFolderId(e.target.value)}
-          tabIndex={-1}
-        >
-          {/* Show Default as default option, hide history folder */}
-          {folders
-            .filter((f) => f.name !== HISTORY_FOLDER_NAME)
-            .map((folder: Folder) => (
-              <option key={folder.id} value={folder.id}>
-                {folder.name}
-              </option>
-            ))}
-        </select>
-      </div>
+      <AddToFolder
+        folders={folders}
+        selectedFolderId={selectedFolderId}
+        setSelectedFolderId={setSelectedFolderId}
+        addStatus={addStatus}
+        handleAddToFolder={handleAddToFolder}
+      />
     </div>
   );
 }

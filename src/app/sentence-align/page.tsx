@@ -2,6 +2,8 @@
 import React, { use, useState } from "react";
 import { splitSentences } from "../utils/textUtils";
 import StartTypingButton from "../components/StartTypingButton";
+import { useFolders } from "../hooks/useFolders";
+import AddToFolder from "../components/AddToFolder";
 
 type SentenceAlignPageProps = {
   searchParams: Promise<{ [key: string]: string }>;
@@ -17,6 +19,17 @@ export default function SentenceAlignPage({
   const originalSentences = splitSentences(originalText);
   const typingSentences = splitSentences(typingText);
   const countMatch = originalSentences.length === typingSentences.length;
+
+  const { folders } = useFolders();
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    folders.find((f) => f.name === "Default")?.id || "",
+  );
+  const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
+
+  // Dummy handler for demonstration; you may want to pass real data
+  const handleAddToFolder = () => {
+    setAddStatus("added");
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
@@ -66,6 +79,13 @@ export default function SentenceAlignPage({
           originalText={originalText}
           typingText={typingText}
           disabled={!countMatch}
+        />
+        <AddToFolder
+          folders={folders}
+          selectedFolderId={selectedFolderId}
+          setSelectedFolderId={setSelectedFolderId}
+          addStatus={addStatus}
+          handleAddToFolder={handleAddToFolder}
         />
       </div>
     </div>

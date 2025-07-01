@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import { useFolders } from "../../hooks/useFolders";
+import AddToFolder from "../../components/AddToFolder";
 
 export default function FinishedPage() {
+  const { folders } = useFolders();
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    folders.find((f) => f.name === "Default")?.id || "",
+  );
+  const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
+
+  // Dummy handler for demonstration; you may want to pass real data
+  const handleAddToFolder = () => {
+    setAddStatus("added");
+  };
+
   return (
     <div>
       <h1 className="text-4xl font-bold text-center mt-20">Congratulations!</h1>
@@ -15,6 +28,15 @@ export default function FinishedPage() {
         >
           Try Again
         </a>
+      </div>
+      <div className="flex justify-center mt-10">
+        <AddToFolder
+          folders={folders}
+          selectedFolderId={selectedFolderId}
+          setSelectedFolderId={setSelectedFolderId}
+          addStatus={addStatus}
+          handleAddToFolder={handleAddToFolder}
+        />
       </div>
     </div>
   );

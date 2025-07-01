@@ -5,6 +5,7 @@ import { useText } from "../../context/TextContext";
 import { HISTORY_FOLDER_NAME } from "../../constants/history";
 import { Folder, TypingHistoryItem } from "../../types";
 import { useFolderContents } from "../../hooks/useFolderContents";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function FolderContentsPage() {
   const router = useRouter();
@@ -76,10 +77,11 @@ export default function FolderContentsPage() {
   return (
     <div className="min-h-screen bg-slate-900 p-6 flex flex-col items-center">
       <button
-        className="self-start mb-4 text-blue-400 hover:underline"
+        className="self-start mb-4 text-blue-400 hover:underline flex items-center gap-2"
         onClick={() => router.push("/folders")}
       >
-        {"<- Back to Folders"}
+        <FaArrowLeft />
+        Back to Folders
       </button>
       <h1 className="text-2xl text-white font-bold mb-2">
         {folder?.name || "Folder"}

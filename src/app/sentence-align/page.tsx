@@ -1,9 +1,9 @@
 "use client";
 import React, { use, useState } from "react";
 import { splitSentences } from "../utils/textUtils";
-import StartTypingButton from "../components/StartTypingButton";
-import { useFolders } from "../hooks/useFolders";
-import AddToFolder from "../components/AddToFolder";
+import StartTypingButton from "../../components/StartTypingButton";
+import { useFolders } from "../../hooks/useFolders";
+import AddToFolder from "../../components/AddToFolder";
 
 type SentenceAlignPageProps = {
   searchParams: Promise<{ [key: string]: string }>;

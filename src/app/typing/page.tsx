@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useText } from "../context/TextContext";
-import CursorLockedInput from "@/app/components/CursorLockInput/index";
+import { useText } from "../../context/TextContext";
+import CursorLockedInput from "../../components/CursorLockInput/index";
 import { useRouter } from "next/navigation";
-import RemainingSpan from "../components/RemainSpan";
-import { useSentenceNavigation } from "../hooks/useSentenceNavigation";
+import RemainingSpan from "../../components/RemainSpan";
+import { useSentenceNavigation } from "../../hooks/useSentenceNavigation";
 import { compareStr } from "../utils/textUtils";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 

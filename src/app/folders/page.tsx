@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useFolders } from "../hooks/useFolders";
-import { HISTORY_FOLDER_NAME } from "../constants/history";
-import { Folder } from "../types";
+import { useFolders } from "../../hooks/useFolders";
+import { HISTORY_FOLDER_NAME } from "../../constants/history";
+import { Folder } from "../../types";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function FolderManagerPage() {

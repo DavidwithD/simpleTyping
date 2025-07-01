@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { splitAndTrimSentences } from "../utils/textUtils";
+import { splitAndTrimSentences } from "../app/utils/textUtils";
 
 export function useSentenceNavigation(typingText: string, hintText: string) {
   const [sentenceIndex, setSentenceIndex] = useState(0);

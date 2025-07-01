@@ -1,6 +1,7 @@
+"use client";
 import React, { useState } from "react";
-import { useFolders } from "../../hooks/useFolders";
-import AddToFolder from "../../components/AddToFolder";
+import { useFolders } from "../../../hooks/useFolders";
+import AddToFolder from "../../../components/AddToFolder";
 
 export default function FinishedPage() {
   const { folders } = useFolders();

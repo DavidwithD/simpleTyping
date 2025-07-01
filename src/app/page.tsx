@@ -1,14 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useTypingHistory } from "./hooks/useTypingHistory";
-import { useFolders } from "./hooks/useFolders";
-import { useFolderContents } from "./hooks/useFolderContents";
-import TranslateArea from "./components/TranslateArea";
-import TypingInputArea from "./components/TypingInputArea";
-import HistoryControls from "./components/HistoryControls";
-import StartTypingButton from "./components/StartTypingButton";
-import AddToFolder from "./components/AddToFolder";
+import { useTypingHistory } from "../hooks/useTypingHistory";
+import { useFolders } from "../hooks/useFolders";
+import { useFolderContents } from "../hooks/useFolderContents";
+import TranslateArea from "../components/TranslateArea";
+import TypingInputArea from "../components/TypingInputArea";
+import HistoryControls from "../components/HistoryControls";
+import StartTypingButton from "../components/StartTypingButton";
+import AddToFolder from "../components/AddToFolder";
 
 export default function HomePage() {
   const router = useRouter();

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import {
   trimAndReplaceNewLineAndTab,
   splitSentences,
-} from "../utils/textUtils";
+} from "../app/utils/textUtils";
 import { HISTORY_FOLDER_MAX_RECORDS } from "../constants/history";
 import { useText } from "../context/TextContext";
 import { TypingHistoryItem } from "../types";

@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useText } from "../../context/TextContext";
-import { HISTORY_FOLDER_NAME } from "../../constants/history";
-import { Folder, TypingHistoryItem } from "../../types";
-import { useFolderContents } from "../../hooks/useFolderContents";
+import { useText } from "../../../context/TextContext";
+import { HISTORY_FOLDER_NAME } from "../../../constants/history";
+import { Folder, TypingHistoryItem } from "../../../types";
+import { useFolderContents } from "../../../hooks/useFolderContents";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function FolderContentsPage() {

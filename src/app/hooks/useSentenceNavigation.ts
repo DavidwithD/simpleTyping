@@ -1,21 +1,18 @@
 import { useMemo, useState } from "react";
 import { splitAndTrimSentences } from "../utils/textUtils";
 
-export function useSentenceNavigation(
-  typingText: string,
-  originalText: string,
-) {
+export function useSentenceNavigation(typingText: string, hintText: string) {
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const sentences = useMemo(
     () => splitAndTrimSentences(typingText),
     [typingText],
   );
-  const originalSentences = useMemo(
-    () => splitAndTrimSentences(originalText),
-    [originalText],
+  const hintSentences = useMemo(
+    () => splitAndTrimSentences(hintText),
+    [hintText],
   );
   const currentSentence = sentences[sentenceIndex] || "";
-  const currentOriginal = originalSentences[sentenceIndex] || "";
+  const currentOriginal = hintSentences[sentenceIndex] || "";
   const isLast = sentenceIndex === sentences.length - 1;
 
   const goNext = () => {
@@ -30,7 +27,7 @@ export function useSentenceNavigation(
 
   return {
     sentences,
-    originalSentences,
+    hintSentences,
     currentSentence,
     currentOriginal,
     sentenceIndex,

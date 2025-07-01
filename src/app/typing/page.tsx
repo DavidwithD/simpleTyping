@@ -9,7 +9,7 @@ import { compareStr } from "../utils/textUtils";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 export default function TypingPage() {
-  const { typingText, originalText } = useText();
+  const { typingText, hintText } = useText();
   const [value, setValue] = useState<string>("");
   const [showing, setShowing] = useState<boolean>(true);
   const [peeking, setPeeking] = useState<boolean>(false);
@@ -23,7 +23,7 @@ export default function TypingPage() {
     sentenceIndex,
     isLast,
     goNext,
-  } = useSentenceNavigation(typingText, originalText);
+  } = useSentenceNavigation(typingText, hintText);
 
   const { identical, incorrect, remaining } = compareStr(
     currentSentence,
@@ -67,7 +67,7 @@ export default function TypingPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Top half: original sentence */}
+      {/* Top half: hint sentence */}
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-800">
         {currentOriginal && (
           <div className="max-w-2xl p-4 rounded-lg text-xl text-gray-200 break-all">

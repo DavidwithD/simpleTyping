@@ -41,7 +41,7 @@ export default function FolderContentsPage() {
     localStorage.setItem(
       "typingHistory",
       JSON.stringify([
-        { originalText: item.hintText, typingText: item.typingText },
+        { hintText: item.hintText, typingText: item.typingText },
       ]),
     );
     router.push("/typing");
@@ -157,7 +157,7 @@ export default function FolderContentsPage() {
                 </button>
                 <div className="mb-2">
                   <span className="text-sm text-gray-400 font-normal">
-                    Original:
+                    Hint:
                   </span>
                   <div className="text-gray-200 whitespace-nowrap overflow-hidden text-ellipsis text-base bg-slate-700 rounded p-2 mt-1 max-w-full">
                     {item.hintText}

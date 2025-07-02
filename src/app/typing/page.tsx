@@ -80,40 +80,68 @@ export default function TypingPage() {
       {/* Bottom half: typing area */}
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-900 relative">
         {/* Eye icon toggle */}
-        <button
-          className="absolute top-4 right-8 z-20 p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
-          onClick={() => setShowing((prev) => !prev)}
-          onMouseEnter={() => setPeeking(true)}
-          onMouseLeave={() => setPeeking(false)}
-          aria-label={showing || peeking ? "Hide remaining" : "Show remaining"}
-        >
-          {showing || peeking ? (
-            <MdVisibility size={24} className="text-gray-200" />
-          ) : (
-            <MdVisibilityOff size={24} className="text-gray-400" />
-          )}
-        </button>
-        {/* input is invisible but always on focus */}
-        <CursorLockedInput
-          ref={inputRef}
-          className="fixed top-0 left-0 w-full h-full opacity-0 pointer-events-none cursor-none"
-          autoFocus
-          autoComplete="off"
-          spellCheck="false"
-          tabIndex={-1}
-          value={value}
-          onBlur={() => inputRef.current?.focus()}
-          onChange={(e) => setValue(e.target.value)}
+        <VisibilityToggleButton
+          showing={showing}
+          peeking={peeking}
+          onToggle={() => setShowing((prev) => !prev)}
+          onPeekStart={() => setPeeking(true)}
+          onPeekEnd={() => setPeeking(false)}
         />
-        <TypingSentenceDisplay
-          identical={identical}
-          incorrect={incorrect}
-          remaining={remaining}
-          showRemaining={showing || peeking}
-        />
+        {/* Typing display and invisible input overlay */}
+        <div className="relative">
+          <TypingSentenceDisplay
+            identical={identical}
+            incorrect={incorrect}
+            remaining={remaining}
+            showRemaining={showing || peeking}
+          />
+          {/* Invisible input positioned exactly over the typing display for IME positioning */}
+          <CursorLockedInput
+            ref={inputRef}
+            className="absolute inset-0 opacity-0 pointer-events-none cursor-none max-w-2xl p-4 text-2xl"
+            style={{ lineHeight: "5rem" }}
+            autoFocus
+            autoComplete="off"
+            spellCheck="false"
+            tabIndex={-1}
+            value={value}
+            onBlur={() => inputRef.current?.focus()}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </div>
         <SentenceProgress current={sentenceIndex} total={sentences.length} />
       </div>
     </div>
+  );
+}
+
+function VisibilityToggleButton({
+  showing,
+  peeking,
+  onToggle,
+  onPeekStart,
+  onPeekEnd,
+}: {
+  showing: boolean;
+  peeking: boolean;
+  onToggle: () => void;
+  onPeekStart: () => void;
+  onPeekEnd: () => void;
+}) {
+  return (
+    <button
+      className="absolute top-4 right-8 z-20 p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
+      onClick={onToggle}
+      onMouseEnter={onPeekStart}
+      onMouseLeave={onPeekEnd}
+      aria-label={showing || peeking ? "Hide remaining" : "Show remaining"}
+    >
+      {showing || peeking ? (
+        <MdVisibility size={24} className="text-gray-200" />
+      ) : (
+        <MdVisibilityOff size={24} className="text-gray-400" />
+      )}
+    </button>
   );
 }
 

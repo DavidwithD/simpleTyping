@@ -1,22 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { useFolders } from "../../../hooks/useFolders";
+import React from "react";
 import AddToFolder from "../../../components/AddToFolder";
 
 export default function FinishedPage() {
-  const { folders } = useFolders();
-  const [selectedFolderId, setSelectedFolderId] = useState<string>(
-    folders.find((f) => f.name === "Default")?.id || "",
-  );
-
   // Dummy values for demonstration; replace with real values as needed
   const hintValue = "";
   const typingValue = "";
-
-  // Dummy handler for demonstration; you may want to pass real data
-  const handleAddToFolder = () => {
-    // Implement add logic here
-  };
 
   return (
     <div>
@@ -34,14 +23,7 @@ export default function FinishedPage() {
         </a>
       </div>
       <div className="flex justify-center mt-10">
-        <AddToFolder
-          folders={folders}
-          selectedFolderId={selectedFolderId}
-          setSelectedFolderId={setSelectedFolderId}
-          hintValue={hintValue}
-          typingValue={typingValue}
-          handleAddToFolder={handleAddToFolder}
-        />
+        <AddToFolder hintValue={hintValue} typingValue={typingValue} />
       </div>
     </div>
   );

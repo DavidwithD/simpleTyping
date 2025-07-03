@@ -2,7 +2,6 @@
 import React, { use, useState } from "react";
 import { splitSentences } from "../utils/textUtils";
 import StartTypingButton from "../../components/StartTypingButton";
-import { useFolders } from "../../hooks/useFolders";
 import AddToFolder from "../../components/AddToFolder";
 
 type SentenceAlignPageProps = {
@@ -19,14 +18,6 @@ export default function SentenceAlignPage({
   const hintSentences = splitSentences(hintText);
   const typingSentences = splitSentences(typingText);
   const countMatch = hintSentences.length === typingSentences.length;
-
-  const { folders } = useFolders();
-  const [selectedFolderId, setSelectedFolderId] = useState<string>(
-    folders.find((f) => f.name === "Default")?.id || "",
-  );
-
-  // Dummy handler for demonstration; you may want to pass real data
-  const handleAddToFolder = () => {};
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
@@ -77,14 +68,7 @@ export default function SentenceAlignPage({
           typingText={typingText}
           disabled={!countMatch}
         />
-        <AddToFolder
-          folders={folders}
-          selectedFolderId={selectedFolderId}
-          setSelectedFolderId={setSelectedFolderId}
-          handleAddToFolder={handleAddToFolder}
-          hintValue={hintText}
-          typingValue={typingText}
-        />
+        <AddToFolder hintValue={hintText} typingValue={typingText} />
       </div>
     </div>
   );

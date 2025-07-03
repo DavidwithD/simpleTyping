@@ -1,25 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { Folder, TypingHistoryItem } from "../types";
 import { HISTORY_FOLDER_NAME } from "../constants/history";
+import { useFolders } from "../hooks/useFolders";
+import { useFolderContents } from "../hooks/useFolderContents";
 
 interface AddToFolderProps {
-  folders: Folder[];
-  selectedFolderId: string;
-  setSelectedFolderId: (id: string) => void;
   hintValue: string;
   typingValue: string;
-  handleAddToFolder: () => void;
 }
 
 const AddToFolder: React.FC<AddToFolderProps> = ({
-  folders,
-  selectedFolderId,
-  setSelectedFolderId,
   hintValue,
   typingValue,
-  handleAddToFolder,
 }) => {
+  const { folders } = useFolders();
+  const [selectedFolderId, setSelectedFolderId] = useState<string>(
+    folders.find((f) => f.name === "Default")?.id || "",
+  );
   const [addStatus, setAddStatus] = useState<"idle" | "added">("idle");
+  const { contents, addContent } = useFolderContents(selectedFolderId);
+
+  const handleAddToFolder = () => {
+    if (!selectedFolderId) return;
+
+    // Check if item already exists
+    const exists = contents.some(
+      (item) => item.hintText === hintValue && item.typingText === typingValue,
+    );
+
+    if (exists) {
+      setAddStatus("added");
+      return;
+    }
+
+    // Add new item
+    const newItem: TypingHistoryItem = {
+      id: Date.now().toString(),
+      hintText: hintValue,
+      typingText: typingValue,
+      createdAt: Date.now(),
+    };
+    addContent(newItem);
+    setAddStatus("added");
+  };
 
   useEffect(() => {
     // Ensure history folder exists

@@ -4,13 +4,11 @@ import { splitSentences } from "../utils/textUtils";
 import StartTypingButton from "../../components/StartTypingButton";
 import AddToFolder from "../../components/AddToFolder";
 
-type SentenceAlignPageProps = {
+type EditPageProps = {
   searchParams: Promise<{ [key: string]: string }>;
 };
 
-export default function SentenceAlignPage({
-  searchParams,
-}: SentenceAlignPageProps) {
+export default function EditPage({ searchParams }: EditPageProps) {
   const { hint, typing } = use(searchParams);
   const [hintText, setHintTextState] = useState(hint || "");
   const [typingText, setTypingTextState] = useState(typing || "");
@@ -21,9 +19,7 @@ export default function SentenceAlignPage({
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl text-white font-bold mb-4">
-        Sentence Alignment Check
-      </h1>
+      <h1 className="text-2xl text-white font-bold mb-4">Edit Text</h1>
       <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
         <div className="flex-1">
           <h2 className="text-lg text-gray-300 mb-2">Hint Text</h2>

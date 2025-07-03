@@ -5,7 +5,7 @@ import { useText } from "../../../context/TextContext";
 import { HISTORY_FOLDER_NAME } from "../../../constants/history";
 import { Folder, TypingHistoryItem } from "../../../types";
 import { useFolderContents } from "../../../hooks/useFolderContents";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEdit } from "react-icons/fa";
 
 export default function FolderContentsPage() {
   const router = useRouter();
@@ -45,6 +45,14 @@ export default function FolderContentsPage() {
       ]),
     );
     router.push("/typing");
+  };
+
+  // Edit content in edit page
+  const handleEdit = (item: TypingHistoryItem) => {
+    const params = new URLSearchParams();
+    params.set("hint", item.hintText);
+    params.set("typing", item.typingText);
+    router.push(`/edit?${params.toString()}`);
   };
 
   const handleDeleteFolder = () => {
@@ -145,16 +153,28 @@ export default function FolderContentsPage() {
                 className="bg-slate-800 p-4 rounded group flex flex-col gap-2 relative cursor-pointer hover:bg-slate-700 transition"
                 onClick={() => handleStartTyping(item)}
               >
-                <button
-                  className="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100 transition"
-                  title="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(item.id);
-                  }}
-                >
-                  &#10005;
-                </button>
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+                    className="text-blue-400 opacity-0 group-hover:opacity-100 transition"
+                    title="Edit"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(item);
+                    }}
+                  >
+                    <FaEdit size={14} />
+                  </button>
+                  <button
+                    className="text-red-400 opacity-0 group-hover:opacity-100 transition"
+                    title="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.id);
+                    }}
+                  >
+                    &#10005;
+                  </button>
+                </div>
                 <div className="mb-2">
                   <span className="text-sm text-gray-400 font-normal">
                     Hint:

@@ -4,7 +4,7 @@
 graph TD
   Home["Home Page (/)"]
   Typing["Typing Page (/typing)"]
-  Align["Sentence Alignment (/sentence-align)"]
+  Align["Edit Page (/edit)"]
   Folders["Folders Page (/folders)"]
   FolderDetail["Folder Detail (/folders/[id])"]
 

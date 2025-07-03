@@ -41,7 +41,7 @@ export default function StartTypingButton({
         hint: cleanedHint,
         typing: cleanedTyping,
       }).toString();
-      router.push(`/sentence-align?${params}`);
+      router.push(`/edit?${params}`);
       return;
     }
     setHintText(cleanedHint);

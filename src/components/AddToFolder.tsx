@@ -96,7 +96,7 @@ const AddToFolder: React.FC<AddToFolderProps> = ({
   }, [selectedFolderId, hintValue, typingValue]);
 
   return (
-    <div className="flex items-center gap-2 mt-6">
+    <div className="flex items-center gap-2">
       <button
         className={`px-4 py-2 rounded ${addStatus === "added" ? "bg-green-600 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}`}
         disabled={!selectedFolderId || addStatus === "added"}

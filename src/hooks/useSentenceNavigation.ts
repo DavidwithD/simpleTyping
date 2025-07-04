@@ -23,6 +23,14 @@ export function useSentenceNavigation(typingText: string, hintText: string) {
     return false;
   };
 
+  const goPrevious = () => {
+    if (sentenceIndex > 0) {
+      setSentenceIndex((idx) => idx - 1);
+      return true;
+    }
+    return false;
+  };
+
   const reset = () => setSentenceIndex(0);
 
   return {
@@ -33,6 +41,7 @@ export function useSentenceNavigation(typingText: string, hintText: string) {
     sentenceIndex,
     isLast,
     goNext,
+    goPrevious,
     reset,
     setSentenceIndex,
   };

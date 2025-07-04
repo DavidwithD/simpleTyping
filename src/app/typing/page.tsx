@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import RemainingSpan from "../../components/RemainSpan";
 import { useSentenceNavigation } from "../../hooks/useSentenceNavigation";
 import { compareStr } from "../utils/textUtils";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { MdVisibility, MdVisibilityOff, MdAdd, MdRemove } from "react-icons/md";
 
 export default function TypingPage() {
   const { typingText, hintText } = useText();
   const [value, setValue] = useState<string>("");
   const [showing, setShowing] = useState<boolean>(true);
   const [peeking, setPeeking] = useState<boolean>(false);
+  const [fontSize, setFontSize] = useState<number>(24); // Base font size in pixels
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -23,12 +24,21 @@ export default function TypingPage() {
     sentenceIndex,
     isLast,
     goNext,
+    goPrevious,
   } = useSentenceNavigation(typingText, hintText);
 
   const { identical, incorrect, remaining } = compareStr(
     currentSentence,
     value,
   );
+
+  const increaseFontSize = () => {
+    setFontSize((prev) => Math.min(prev + 2, 48)); // Max 48px
+  };
+
+  const decreaseFontSize = () => {
+    setFontSize((prev) => Math.max(prev - 2, 12)); // Min 12px
+  };
 
   useEffect(() => {
     if (
@@ -49,6 +59,16 @@ export default function TypingPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) setPeeking(true);
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goNext();
+        setValue("");
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goPrevious();
+        setValue("");
+      }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
       if (!e.ctrlKey && !e.metaKey) setPeeking(false);
@@ -59,7 +79,7 @@ export default function TypingPage() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [goNext, goPrevious]);
 
   if (!currentSentence) {
     return <div className="text-white text-center mt-10">No text to type.</div>;
@@ -70,7 +90,10 @@ export default function TypingPage() {
       {/* Top half: hint sentence */}
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-800">
         {currentHint && (
-          <div className="max-w-2xl p-4 rounded-lg text-xl text-gray-200 break-all">
+          <div
+            className="max-w-2xl p-4 rounded-lg text-gray-200 break-all"
+            style={{ fontSize: `${fontSize}px` }}
+          >
             {currentHint}
           </div>
         )}
@@ -79,14 +102,21 @@ export default function TypingPage() {
       <div className="w-full h-0.5 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-700" />
       {/* Bottom half: typing area */}
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-900 relative">
-        {/* Eye icon toggle */}
-        <VisibilityToggleButton
-          showing={showing}
-          peeking={peeking}
-          onToggle={() => setShowing((prev) => !prev)}
-          onPeekStart={() => setPeeking(true)}
-          onPeekEnd={() => setPeeking(false)}
-        />
+        {/* Control buttons */}
+        <div className="absolute top-4 right-8 z-20 flex gap-4 items-center">
+          <FontSizeControls
+            onIncrease={increaseFontSize}
+            onDecrease={decreaseFontSize}
+            fontSize={fontSize}
+          />
+          <VisibilityToggleButton
+            showing={showing}
+            peeking={peeking}
+            onToggle={() => setShowing((prev) => !prev)}
+            onPeekStart={() => setPeeking(true)}
+            onPeekEnd={() => setPeeking(false)}
+          />
+        </div>
         {/* Typing display and invisible input overlay */}
         <div className="relative">
           <TypingSentenceDisplay
@@ -94,12 +124,16 @@ export default function TypingPage() {
             incorrect={incorrect}
             remaining={remaining}
             showRemaining={showing || peeking}
+            fontSize={fontSize}
           />
           {/* Invisible input positioned exactly over the typing display for IME positioning */}
           <CursorLockedInput
             ref={inputRef}
-            className="absolute inset-0 opacity-0 pointer-events-none cursor-none max-w-2xl p-4 text-2xl"
-            style={{ lineHeight: "5rem" }}
+            className="absolute inset-0 opacity-0 pointer-events-none cursor-none max-w-2xl p-4 text-white break-all"
+            style={{
+              fontSize: `${fontSize}px`,
+              lineHeight: `${fontSize * 2.1}px`, // Match the display component
+            }}
             autoFocus
             autoComplete="off"
             spellCheck="false"
@@ -111,6 +145,43 @@ export default function TypingPage() {
         </div>
         <SentenceProgress current={sentenceIndex} total={sentences.length} />
       </div>
+    </div>
+  );
+}
+
+function FontSizeControls({
+  onIncrease,
+  onDecrease,
+  fontSize,
+}: {
+  onIncrease: () => void;
+  onDecrease: () => void;
+  fontSize: number;
+}) {
+  return (
+    <div className="flex gap-4 items-center">
+      <button
+        className="p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
+        onClick={onDecrease}
+        disabled={fontSize <= 12}
+        aria-label="Decrease font size"
+      >
+        <MdRemove
+          size={20}
+          className={fontSize <= 12 ? "text-gray-500" : "text-gray-200"}
+        />
+      </button>
+      <button
+        className="p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
+        onClick={onIncrease}
+        disabled={fontSize >= 48}
+        aria-label="Increase font size"
+      >
+        <MdAdd
+          size={20}
+          className={fontSize >= 48 ? "text-gray-500" : "text-gray-200"}
+        />
+      </button>
     </div>
   );
 }
@@ -130,7 +201,7 @@ function VisibilityToggleButton({
 }) {
   return (
     <button
-      className="absolute top-4 right-8 z-20 p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
+      className="z-20 p-2 bg-slate-800 rounded-full shadow hover:bg-slate-700 transition-colors"
       onClick={onToggle}
       onMouseEnter={onPeekStart}
       onMouseLeave={onPeekEnd}
@@ -150,16 +221,21 @@ function TypingSentenceDisplay({
   incorrect,
   remaining,
   showRemaining,
+  fontSize,
 }: {
   identical: string;
   incorrect: string;
   remaining: string;
   showRemaining: boolean;
+  fontSize: number;
 }) {
   return (
     <div
-      className="max-w-2xl p-4 rounded-lg text-2xl text-white break-all"
-      style={{ lineHeight: "5rem" }}
+      className="max-w-2xl p-4 rounded-lg text-white break-all"
+      style={{
+        fontSize: `${fontSize}px`,
+        lineHeight: `${fontSize * 2.1}px`, // Maintain proportional line height
+      }}
     >
       <span className="text-white mb-4">{identical}</span>
       <span className="text-green-500">{incorrect}</span>

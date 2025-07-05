@@ -2,15 +2,16 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTypingHistory } from "../hooks/useTypingHistory";
-import TranslateArea from "../components/TranslateArea";
-import TypingInputArea from "../components/TypingInputArea";
+import TextInputArea from "../components/TextInputArea";
 import HistoryControls from "../components/HistoryControls";
 import StartTypingButton from "../components/StartTypingButton";
+import TranslateControls from "../components/TranslateControls";
 
 export default function HomePage() {
   const router = useRouter();
   const [hintValue, setHintValue] = useState<string>("");
   const [typingValue, setTypingValue] = useState<string>("");
+  const [targetLang, setTargetLang] = useState("auto");
   const {
     history,
     historyIndex,
@@ -19,6 +20,15 @@ export default function HomePage() {
     handleHistoryLeft,
     handleHistoryRight,
   } = useTypingHistory();
+
+  const handleTranslate = async () => {
+    if (!hintValue) return;
+    try {
+      await navigator.clipboard.writeText(hintValue);
+    } catch {}
+    const url = `https://translate.google.com/?sl=auto&tl=${targetLang}&text=${encodeURIComponent(hintValue)}&op=translate`;
+    window.open(url, "_blank");
+  };
 
   // When historyIndex changes, update the textareas with the corresponding history values
   useEffect(() => {
@@ -38,8 +48,25 @@ export default function HomePage() {
         Manage Folders
       </button>
 
-      <TranslateArea value={hintValue} setValue={setHintValue} />
-      <TypingInputArea value={typingValue} setValue={setTypingValue} />
+      <TextInputArea
+        value={hintValue}
+        setValue={setHintValue}
+        placeholder="Enter text to translate..."
+        className="flex-1"
+      />
+      <TranslateControls
+        targetLang={targetLang}
+        onTargetLangChange={setTargetLang}
+        onTranslate={handleTranslate}
+        disabled={!hintValue}
+      />
+      <TextInputArea
+        value={typingValue}
+        setValue={setTypingValue}
+        placeholder="Put the text here..."
+        autoFocus={true}
+        className="flex-1"
+      />
       <HistoryControls
         onPrev={handleHistoryLeft}
         onNext={handleHistoryRight}

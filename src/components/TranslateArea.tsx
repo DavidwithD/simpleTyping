@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { languageOptions } from "../constants/languageOptions";
+import React from "react";
 import PasteFromClipboardButton from "./PasteFromClipboardButton";
 
 export default function TranslateArea({
@@ -9,17 +8,6 @@ export default function TranslateArea({
   value: string;
   setValue: (v: string) => void;
 }) {
-  const [targetLang, setTargetLang] = useState("auto");
-
-  const handleTranslate = async () => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch {}
-    const url = `https://translate.google.com/?sl=auto&tl=${targetLang}&text=${encodeURIComponent(value)}&op=translate`;
-    window.open(url, "_blank");
-  };
-
   return (
     <div className="w-full max-w-2xl mb-4 relative group">
       <textarea
@@ -30,28 +18,6 @@ export default function TranslateArea({
       />
       <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <PasteFromClipboardButton onPaste={setValue} />
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-          onClick={handleTranslate}
-          tabIndex={-1}
-        >
-          Translate
-        </button>
-        <span className="text-white">to</span>
-        <select
-          className="px-2 py-1 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={targetLang}
-          onChange={(e) => setTargetLang(e.target.value)}
-          tabIndex={-1}
-        >
-          {languageOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
       </div>
     </div>
   );

@@ -86,12 +86,12 @@ export default function TypingPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen">
       {/* Top half: hint sentence */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-800">
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-800 min-h-0">
         {currentHint && (
           <div
-            className="max-w-2xl p-4 rounded-lg text-gray-200 break-all"
+            className="max-w-2xl p-4 rounded-lg text-gray-200 break-all overflow-auto max-h-full"
             style={{ fontSize: `${fontSize}px` }}
           >
             {currentHint}
@@ -101,7 +101,7 @@ export default function TypingPage() {
       {/* Divider */}
       <div className="w-full h-0.5 bg-gradient-to-r from-slate-700 via-slate-400 to-slate-700" />
       {/* Bottom half: typing area */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-slate-900 relative">
+      <div className="flex-1 flex flex-col items-center justify-center bg-slate-900 relative min-h-0">
         {/* Control buttons */}
         <div className="absolute top-4 right-8 z-20 flex gap-4 items-center">
           <FontSizeControls

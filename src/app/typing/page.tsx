@@ -7,6 +7,7 @@ import RemainingSpan from "../../components/RemainSpan";
 import { useSentenceNavigation } from "../../hooks/useSentenceNavigation";
 import { compareStr } from "../utils/textUtils";
 import { MdVisibility, MdVisibilityOff, MdAdd, MdRemove } from "react-icons/md";
+import SentenceNavigation from "../../components/SentenceNavigation";
 
 export default function TypingPage() {
   const { typingText, hintText } = useText();
@@ -38,6 +39,16 @@ export default function TypingPage() {
 
   const decreaseFontSize = () => {
     setFontSize((prev) => Math.max(prev - 2, 12)); // Min 12px
+  };
+
+  const handlePreviousSentence = () => {
+    goPrevious();
+    setValue("");
+  };
+
+  const handleNextSentence = () => {
+    goNext();
+    setValue("");
   };
 
   useEffect(() => {
@@ -104,6 +115,14 @@ export default function TypingPage() {
       <div className="flex-1 flex flex-col items-center justify-center bg-slate-900 relative min-h-0">
         {/* Control buttons */}
         <div className="absolute top-4 right-8 z-20 flex gap-4 items-center">
+          <SentenceNavigation
+            onPrevious={handlePreviousSentence}
+            onNext={handleNextSentence}
+            canGoPrevious={sentenceIndex > 0}
+            canGoNext={sentenceIndex < sentences.length - 1}
+            currentIndex={sentenceIndex}
+            totalSentences={sentences.length}
+          />
           <FontSizeControls
             onIncrease={increaseFontSize}
             onDecrease={decreaseFontSize}
@@ -165,6 +184,7 @@ function FontSizeControls({
         onClick={onDecrease}
         disabled={fontSize <= 12}
         aria-label="Decrease font size"
+        title="Decrease font size"
       >
         <MdRemove
           size={20}
@@ -176,6 +196,7 @@ function FontSizeControls({
         onClick={onIncrease}
         disabled={fontSize >= 48}
         aria-label="Increase font size"
+        title="Increase font size"
       >
         <MdAdd
           size={20}
@@ -206,6 +227,7 @@ function VisibilityToggleButton({
       onMouseEnter={onPeekStart}
       onMouseLeave={onPeekEnd}
       aria-label={showing || peeking ? "Hide remaining" : "Show remaining"}
+      title={`${showing || peeking ? "Hide" : "Show"} remaining text - Hold Ctrl/Cmd to peek`}
     >
       {showing || peeking ? (
         <MdVisibility size={24} className="text-gray-200" />
